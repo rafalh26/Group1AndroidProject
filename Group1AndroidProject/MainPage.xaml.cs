@@ -7,7 +7,6 @@ namespace Group1AndroidProject
     public partial class MainPage : ContentPage
     {
         int count = 0;
-        public MapControl mapView;
 
         public MainPage()
         {
@@ -15,13 +14,6 @@ namespace Group1AndroidProject
             InitializeMap();
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-        }
-        private void ToggleButton_Clicked(object sender, EventArgs e)
-        {
-
-        }
         private async void InitializeMap()
         {
             mapView = new MapControl();
@@ -49,6 +41,11 @@ namespace Group1AndroidProject
             {
                 await DisplayAlert("Error", "Unable to retrieve location.", "OK");
             }
+        }
+
+        private void ToggleButton_Clicked(object sender, EventArgs e)
+        {
+
         }
     }
 
