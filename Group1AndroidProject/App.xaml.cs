@@ -1,4 +1,6 @@
-﻿namespace Group1AndroidProject
+﻿using Group1AndroidProject.Views;
+
+namespace Group1AndroidProject
 {
     public partial class App : Application
     {
