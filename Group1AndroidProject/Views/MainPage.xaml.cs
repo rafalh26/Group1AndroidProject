@@ -22,6 +22,25 @@ public partial class MainPage : ContentPage
         nickEntry.Text = "";
         initializedEntry = true;
     }
+    private void enterButton_Clicked(object sender, EventArgs e)
+    {
+        // Ensure nickEntry.Text is not null or empty before proceeding
+        if (string.IsNullOrWhiteSpace(nickEntry.Text))
+        {
+            DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+            return;
+        }
+
+        // Using the ConnectionHelper in a `using` block
+        using (ConnectionHelper connectionHelper = new ConnectionHelper())
+        {
+            DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
+            // Call the initialConnection method and handle its output if necessary
+            //connectionHelper.sendEnterQuery(nickEntry.Text, this);
+        }
+    }
+
+
     #endregion
     #region LogicFunctions
     bool doubleCheck = false;
@@ -102,25 +121,4 @@ public partial class MainPage : ContentPage
     }
 
     #endregion
-
-
-
-
-private void enterButton_Clicked(object sender, EventArgs e)
-{
-    // Ensure nickEntry.Text is not null or empty before proceeding
-    if (string.IsNullOrWhiteSpace(nickEntry.Text))
-    {
-        DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
-        return;
-    }
-
-    // Using the ConnectionHelper in a `using` block
-    using (ConnectionHelper connectionHelper = new ConnectionHelper())
-    {
-            DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
-        // Call the initialConnection method and handle its output if necessary
-        //connectionHelper.sendEnterQuery(nickEntry.Text, this);
-    }
-}
 }
