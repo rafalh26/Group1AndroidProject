@@ -12,9 +12,11 @@
             Text="Enter Your Nick Name"/>
         <Entry
             Text="Enter Your Nick Name"
-            x:Name="nameEntry"
-            Loaded="nameEntry_Loaded"/>
+            x:Name="nickEntry"
+            Loaded="nickEntry_Loaded"/>
         <Button
-            x:Name="enterButton"/>
+            x:Name="enterButton"
+            Clicked="enterButton_Clicked"
+            />
     </VerticalStackLayout>
 </ContentPage>
