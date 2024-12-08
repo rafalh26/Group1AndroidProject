@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Group1AndroidProject.ConnectSQL
+﻿namespace Group1AndroidProject.ConnectSQL
 {
     public class Contact
     {

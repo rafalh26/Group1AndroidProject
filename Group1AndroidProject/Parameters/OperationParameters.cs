@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Group1AndroidProject.ConnectSQL;
-
-namespace Group1AndroidProject.Parameters
+﻿namespace Group1AndroidProject.Parameters
 {
     public static class OperationParameters
     {

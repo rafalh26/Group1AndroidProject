@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Group1AndroidProject.Parameters;
+using Npgsql;
 
 namespace Group1AndroidProject.ConnectSQL
 {
@@ -61,9 +62,9 @@ namespace Group1AndroidProject.ConnectSQL
             }
             return true;
         }
-        
+
         //Entry nick checkout
-        public string sendEnterQuery(string userInput_Nick, Page currentPage)
+        public async Task<string> SendEnterQueryAsync(string userInput_Nick, Page currentPage)
         {
             string nick = userInput_Nick;
 
@@ -71,21 +72,21 @@ namespace Group1AndroidProject.ConnectSQL
             {
                 try
                 {
-                    sqlConnection.Open();
+                    await sqlConnection.OpenAsync();
 
                     // First, check if the nick already exists
                     string checkQuery = "INSERT INTO \"Contacts\" (nick)\r\n" +
-                        "VALUES (@nick)\r\n" +
-                        "ON CONFLICT (nick) DO NOTHING" +
-                        "\r\nRETURNING nick;\r\n";
+                                        "VALUES (@nick)\r\n" +
+                                        "ON CONFLICT (nick) DO NOTHING" +
+                                        "\r\nRETURNING nick;\r\n";
 
-                    NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection);
+                    using (NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection))
                     {
                         // Add parameter to avoid SQL injection
                         checkCommand.Parameters.AddWithValue("@nick", nick);
 
-                        // Execute the command and get the result
-                        var result = checkCommand.ExecuteScalar();
+                        // Execute the command and get the result asynchronously
+                        var result = await checkCommand.ExecuteScalarAsync();
 
                         // Check if the result is not null, meaning the 'nick' was returned (either inserted or already exists)
                         if (result != null)
@@ -103,10 +104,56 @@ namespace Group1AndroidProject.ConnectSQL
                 }
                 catch (Exception ex)
                 {
-                    //currentPage.DisplayAlert("Warning", "User nick most likely already exist!", "Ok");
+                    // Handle exception appropriately (e.g., log or show an alert)
+                    // await currentPage.DisplayAlert("Warning", "User nick most likely already exists!", "Ok");
                 }
             }
+
             return nick;
+        }
+        #endregion
+
+        #region ContactsListInRangePageInitialization
+
+        public async Task<bool> IsTheUserNewAsync()
+        {
+            using (NpgsqlConnection sqlConnection = new NpgsqlConnection(ConnectionString))
+            {
+                try
+                {
+                    await sqlConnection.OpenAsync();
+
+                    // Query to check if the user exists
+                    string checkQuery = $"SELECT Name FROM \"Contacts\" WHERE nick = @nick";
+
+                    using (NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection))
+                    {
+                        // Add parameter to prevent SQL injection
+                        checkCommand.Parameters.AddWithValue("@nick", OperationParameters.currentUser);
+
+                        // Execute the query and get the result
+                        var result = await checkCommand.ExecuteScalarAsync();
+
+                        // Check if the result is DBNull or null
+                        if (result == null || result == DBNull.Value)
+                        {
+                            // User is new (doesn't exist in the database)
+                            return true;
+                        }
+                        else
+                        {
+                            // User already exists
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions appropriately (e.g., logging)
+                    Console.WriteLine($"An error occurred: {ex.Message}");
+                    throw; // Re-throw the exception or handle it as needed
+                }
+            }
         }
         #endregion
         //private List<Contact> SendCustomQuery(string customQuery, Page currentPage)

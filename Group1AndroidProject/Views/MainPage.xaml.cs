@@ -1,7 +1,7 @@
 namespace Group1AndroidProject.Views;
-using System.Net.NetworkInformation;
 using Group1AndroidProject.ConnectSQL;
 using Group1AndroidProject.Parameters;
+using System.Net.NetworkInformation;
 public partial class MainPage : ContentPage
 {
     //flags
@@ -32,17 +32,24 @@ public partial class MainPage : ContentPage
             return;
         }
 
-        // Using the ConnectionHelper in a `using` block
-        using (ConnectionHelper connectionHelper = new ConnectionHelper())
+        // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
+        try
         {
-            //uncomment for debug
-            //await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
-            connectionHelper.sendEnterQuery(nickEntry.Text, this);
+            using (ConnectionHelper connectionHelper = new ConnectionHelper())
+            {
+                //uncomment for debug
+                //await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
+                await connectionHelper.SendEnterQueryAsync(nickEntry.Text, this);
+            }
+            if (nickEntry.Text != string.Empty)
+            {
+                OperationParameters.currentUser = nickEntry.Text;
+                await Shell.Current.GoToAsync(nameof(ContactsListInRange));
+            }
         }
-        if (nickEntry.Text != string.Empty)
+        catch (Exception ex) 
         {
-            OperationParameters.currentUser = nickEntry.Text;
-            await Shell.Current.GoToAsync(nameof(ContactsListInRange));
+            DisplayAlert("Error:", ex.Message, "ok"); 
         }
     }
 
@@ -93,7 +100,7 @@ public partial class MainPage : ContentPage
 
             _cancelTokenSource = new CancellationTokenSource();
 
-            Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
+            Location? location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
 
             if (location != null)
                 GPSSignalAvailable = true;
