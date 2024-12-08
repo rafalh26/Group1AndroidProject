@@ -9,6 +9,8 @@ namespace Group1AndroidProject.ConnectSQL
         private const string ConnectionString = "User Id=postgres.jtjdvjrcxbdrdlgyqmzf;Password=testB@s3SQL123;Server=aws-0-eu-central-1.pooler.supabase.com;Port=6543;Database=postgres;";
         Contact contact;
         private bool disposedValue;
+
+
         #region IDisposable Implementation
         protected virtual void Dispose(bool disposing)
         {
@@ -59,6 +61,8 @@ namespace Group1AndroidProject.ConnectSQL
             }
             return true;
         }
+        
+        //Entry nick checkout
         public string sendEnterQuery(string userInput_Nick, Page currentPage)
         {
             string nick = userInput_Nick;
@@ -75,7 +79,7 @@ namespace Group1AndroidProject.ConnectSQL
                         "ON CONFLICT (nick) DO NOTHING" +
                         "\r\nRETURNING nick;\r\n";
 
-                    using (NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection))
+                    NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection);
                     {
                         // Add parameter to avoid SQL injection
                         checkCommand.Parameters.AddWithValue("@nick", nick);
@@ -99,7 +103,7 @@ namespace Group1AndroidProject.ConnectSQL
                 }
                 catch (Exception ex)
                 {
-                    currentPage.DisplayAlert("Warning", "User nick most likely already exist!", "Ok");
+                    //currentPage.DisplayAlert("Warning", "User nick most likely already exist!", "Ok");
                 }
             }
             return nick;
