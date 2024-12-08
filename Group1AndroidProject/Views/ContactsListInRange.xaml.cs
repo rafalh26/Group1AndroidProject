@@ -1,4 +1,5 @@
 using Group1AndroidProject.ConnectSQL;
+using Group1AndroidProject.Parameters;
 namespace Group1AndroidProject.Views;
 
 public partial class ContactsListInRange : ContentPage
@@ -14,6 +15,6 @@ public partial class ContactsListInRange : ContentPage
     {
         var label = sender as Label;
 
-        label.Text = $"Welcome dear ...";
+        label.Text = $"Welcome dear {OperationParameters.currentUser}";
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Group1AndroidProject.ConnectSQL
 {
-    internal class Contact
+    public class Contact
     {
         public int id { get; set; }
         public required string nick { get; set; }

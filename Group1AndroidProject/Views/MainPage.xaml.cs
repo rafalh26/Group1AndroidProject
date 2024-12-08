@@ -1,6 +1,7 @@
 namespace Group1AndroidProject.Views;
 using System.Net.NetworkInformation;
 using Group1AndroidProject.ConnectSQL;
+using Group1AndroidProject.Parameters;
 public partial class MainPage : ContentPage
 {
     //flags
@@ -34,12 +35,13 @@ public partial class MainPage : ContentPage
         // Using the ConnectionHelper in a `using` block
         using (ConnectionHelper connectionHelper = new ConnectionHelper())
         {
-            await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
-            //connectionHelper.sendEnterQuery(nickEntry.Text, this);
-            
+            //uncomment for debug
+            //await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
+            connectionHelper.sendEnterQuery(nickEntry.Text, this);
         }
         if (nickEntry.Text != string.Empty)
         {
+            OperationParameters.currentUser = nickEntry.Text;
             await Shell.Current.GoToAsync(nameof(ContactsListInRange));
         }
     }
