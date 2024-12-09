@@ -12,7 +12,7 @@ public partial class ContactsListInRange : ContentPage
         InitializeComponent();
         connectionHelper = new ConnectionHelper();
     }
-    private void checkIfNewUser()
+    private void CheckIfNewUser()
     {
         isCurrentUserNew = connectionHelper.IsTheUserNew();
         if (isCurrentUserNew)
@@ -27,9 +27,16 @@ public partial class ContactsListInRange : ContentPage
         welcomeLabel.Text = $"Welcome dear {OperationParameters.currentUser}";
     }
 
-    private void ContentPage_Appearing(object sender, EventArgs e)
+    private async void ContentPage_Appearing(object sender, EventArgs e)
     {
-        checkIfNewUser();
+        await GetCurrentLocation();
+        CheckIfNewUser();
+    }
+    public async Task GetCurrentLocation()
+    {
+        GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best,TimeSpan.FromSeconds(10));
+
+
 
     }
 }
