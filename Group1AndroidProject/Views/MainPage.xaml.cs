@@ -23,12 +23,12 @@ public partial class MainPage : ContentPage
         nickEntry.Text = "";
         initializedEntry = true;
     }
-    private void enterButton_Clicked(object sender, EventArgs e)
+    private async void enterButton_Clicked(object sender, EventArgs e)
     {
         // Ensure nickEntry.Text is not null or empty before proceeding
         if (string.IsNullOrWhiteSpace(nickEntry.Text))
         {
-            DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+            await DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
             return;
         }
 
@@ -44,12 +44,12 @@ public partial class MainPage : ContentPage
             if (nickEntry.Text != string.Empty)
             {
                 OperationParameters.currentUser = nickEntry.Text;
-                Shell.Current.GoToAsync(nameof(ContactsListInRange));
+                await Shell.Current.GoToAsync(nameof(ContactsListInRange));
             }
         }
-        catch (Exception ex) 
+        catch (Exception) // add ex object and uncomment DisplayAlert for debuging
         {
-            DisplayAlert("Error:", ex.Message, "ok"); 
+            //DisplayAlert("Error:", ex.Message, "ok");
         }
     }
 
