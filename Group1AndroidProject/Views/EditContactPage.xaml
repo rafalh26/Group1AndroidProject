@@ -13,15 +13,15 @@
                FontSize="Medium"/>
         <Entry x:Name="nameEntry"/>
         <Label x:Name="email"
-               Text="Enter Your Name:"
+               Text="Enter Your E-mail:"
                FontSize="Medium"/>
         <Entry x:Name="emailEntry"/>
         <Label x:Name="phone"
-               Text="Enter Your Name:"
+               Text="Enter Your Phone:"
                FontSize="Medium"/>
         <Entry x:Name="phoneEntry"/>
         <Label x:Name="address"
-               Text="Enter Your Name:"
+               Text="Enter Your Address:"
                FontSize="Medium"/>
         <Entry x:Name="addressEntry"/>
 
