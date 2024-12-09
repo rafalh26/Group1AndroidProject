@@ -91,22 +91,20 @@ public partial class MainPage : ContentPage
 
     #endregion
 
-    private void enterButton_Clicked(object sender, EventArgs e)
+    private async void enterButton_Clicked(object sender, EventArgs e)
     {
         {
             // Ensure nickEntry.Text is not null or empty before proceeding
             if (string.IsNullOrWhiteSpace(nickEntry.Text))
             {
-                DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+                await DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
                 return;
             }
 
             // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
-            using (ConnectionHelper connectionHelper = new ConnectionHelper())
-            {
-                OperationParameters.currentUser = connectionHelper.SendEnterQuery(nickEntry.Text, this);
-            }
-            Shell.Current.GoToAsync(nameof(ContactsListInRange));
+            ConnectionHelper connectionHelper = new();
+            OperationParameters.currentUser = await connectionHelper.SendEnterQueryAsync(nickEntry.Text, this);
+            await Shell.Current.GoToAsync(nameof(ContactsListInRange));
         }
     }
 }

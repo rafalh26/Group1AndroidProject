@@ -64,7 +64,7 @@ namespace Group1AndroidProject.ConnectSQL
         }
 
         //Entry nick checkout
-        public string SendEnterQuery(string userInput_Nick, Page currentPage)
+        public async Task<string> SendEnterQueryAsync(string userInput_Nick, Page currentPage)
         {
             string nick = userInput_Nick;
 
@@ -72,7 +72,7 @@ namespace Group1AndroidProject.ConnectSQL
             {
                 try
                 {
-                    sqlConnection.Open();
+                    await sqlConnection.OpenAsync();
 
                     // First, check if the nick already exists
                     string checkQuery = "INSERT INTO \"Contacts\" (nick)\r\n" +
