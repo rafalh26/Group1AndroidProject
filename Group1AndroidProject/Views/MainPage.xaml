@@ -16,7 +16,6 @@
             Loaded="nickEntry_Loaded"/>
         <Button
             x:Name="enterButton"
-            Clicked="enterButton_Clicked"
-            />
+            Clicked="enterButton_Clicked"/>
     </VerticalStackLayout>
 </ContentPage>

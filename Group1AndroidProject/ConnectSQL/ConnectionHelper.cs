@@ -102,7 +102,7 @@ namespace Group1AndroidProject.ConnectSQL
                         }
                     }
                 }
-                catch (Exception) //make ex object and uncomment alert for debug
+                catch (Exception ex)
                 {
                     // Handle exception appropriately (e.g., log or show an alert)
                     //currentPage.DisplayAlert("Warning", "User nick most likely already exists!", "Ok");
@@ -117,6 +117,8 @@ namespace Group1AndroidProject.ConnectSQL
 
         public bool IsTheUserNew()
         {
+            var MyUser = OperationParameters.currentUser;
+            bool resultFromSQL = false;
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(ConnectionString))
             {
                 try
@@ -129,7 +131,7 @@ namespace Group1AndroidProject.ConnectSQL
                     using (NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection))
                     {
                         // Add parameter to prevent SQL injection
-                        checkCommand.Parameters.AddWithValue("@nick", OperationParameters.currentUser);
+                        checkCommand.Parameters.AddWithValue("@nick", MyUser);
 
                         // Execute the query and get the result
                         var result = checkCommand.ExecuteScalar();
@@ -138,20 +140,66 @@ namespace Group1AndroidProject.ConnectSQL
                         if (result == null || result == DBNull.Value)
                         {
                             // User is new (doesn't exist in the database)
-                            return true;
+                            resultFromSQL = true;
                         }
                         else
                         {
                             // User already exists
-                            return false;
+                            resultFromSQL = false;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    // Handle exceptions appropriately (e.g., logging)
+                }
+            }
+            return resultFromSQL;
+        }
+        public async Task SendMyCurrentLocationAsync()
+        {
+            var location = OperationParameters.MyCurrentLocation;
+            var currentUser = OperationParameters.currentUser;
+
+            if (location == null || string.IsNullOrWhiteSpace(currentUser))
+            {
+                // Handle cases where location or user is not properly initialized
+                throw new InvalidOperationException("Location or current user is not set.");
+            }
+
+            string query = @"
+                UPDATE ""Contacts""
+                SET geo_latitude = @latitude, geo_longitude = @longitude
+                WHERE nick = @nick";
+
+            using (NpgsqlConnection sqlConnection = new NpgsqlConnection(ConnectionString))
+            {
+                try
+                {
+                    await sqlConnection.OpenAsync();
+
+                    using (NpgsqlCommand command = new NpgsqlCommand(query, sqlConnection))
+                    {
+                        // Add parameters to the query
+                        command.Parameters.AddWithValue("@latitude", location.Latitude);
+                        command.Parameters.AddWithValue("@longitude", location.Longitude);
+                        command.Parameters.AddWithValue("@nick", currentUser);
+
+                        // Execute the command asynchronously
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
+                        {
+                            // Handle cases where no rows were updated (e.g., user doesn't exist)
+                            throw new InvalidOperationException("No rows were updated. Ensure the user exists in the database.");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Handle exceptions appropriately (e.g., logging)
-                    Console.WriteLine($"An error occurred: {ex.Message}");
-                    throw; // Re-throw the exception or handle it as needed
+                    // Handle exceptions (e.g., log the error or show an alert)
+                    // await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                    throw;
                 }
             }
         }

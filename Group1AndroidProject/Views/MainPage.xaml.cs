@@ -24,40 +24,9 @@ public partial class MainPage : ContentPage
         initializedEntry = true;
     }
 
-    private void enterButton_Clicked(object sender, EventArgs e)
-    {
-        // Ensure nickEntry.Text is not null or empty before proceeding
-        if (string.IsNullOrWhiteSpace(nickEntry.Text))
-        {
-            DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
-            return;
-        }
-
-        // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
-        try
-        {
-            using (ConnectionHelper connectionHelper = new ConnectionHelper())
-            {
-                //uncomment for debug
-                //await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
-                connectionHelper.SendEnterQuery(nickEntry.Text, this);
-            }
-            if (nickEntry.Text != string.Empty)
-            {
-                OperationParameters.currentUser = nickEntry.Text;
-                Shell.Current.GoToAsync(nameof(ContactsListInRange));
-            }
-        }
-        catch (Exception) // add ex object and uncomment DisplayAlert for debuging
-        {
-            //DisplayAlert("Error:", ex.Message, "ok");
-        }
-    }
-
 
     #endregion
     #region LogicFunctions
-    bool doubleCheck = false;
     private async void CheckConditions()
     {
         await IsInternetAvailableAsync();
@@ -88,20 +57,14 @@ public partial class MainPage : ContentPage
     }
 
     //GPS checking according to MAUI docs
-    private CancellationTokenSource _cancelTokenSource;
-    private bool _isCheckingLocation;
 
     public async Task IsGpsAvailableAsync()
     {
         try
         {
-            _isCheckingLocation = true;
-
             GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
 
-            _cancelTokenSource = new CancellationTokenSource();
-
-            Location? location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
+            Location? location = await Geolocation.Default.GetLocationAsync(request);
 
             if (location != null)
                 GPSSignalAvailable = true;
@@ -110,19 +73,10 @@ public partial class MainPage : ContentPage
         //   FeatureNotSupportedException
         //   FeatureNotEnabledException
         //   PermissionException
-        catch (Exception ex)
+        catch (Exception)
         {
             GPSSignalAvailable = false;
         }
-        finally
-        {
-            _isCheckingLocation = false;
-        }
-    }
-    public void CancelRequest()
-    {
-        if (_isCheckingLocation && _cancelTokenSource != null && _cancelTokenSource.IsCancellationRequested == false)
-            _cancelTokenSource.Cancel();
     }
 
 
@@ -136,4 +90,23 @@ public partial class MainPage : ContentPage
     }
 
     #endregion
+
+    private void enterButton_Clicked(object sender, EventArgs e)
+    {
+        {
+            // Ensure nickEntry.Text is not null or empty before proceeding
+            if (string.IsNullOrWhiteSpace(nickEntry.Text))
+            {
+                DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+                return;
+            }
+
+            // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
+            using (ConnectionHelper connectionHelper = new ConnectionHelper())
+            {
+                OperationParameters.currentUser = connectionHelper.SendEnterQuery(nickEntry.Text, this);
+            }
+            Shell.Current.GoToAsync(nameof(ContactsListInRange));
+        }
+    }
 }
