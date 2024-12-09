@@ -11,24 +11,25 @@ public partial class ContactsListInRange : ContentPage
     {
         InitializeComponent();
         connectionHelper = new ConnectionHelper();
-        checkIfNewUser();
     }
-    private async void checkIfNewUser()
+    private void checkIfNewUser()
     {
-        isCurrentUserNew = await connectionHelper.IsTheUserNewAsync();
+        isCurrentUserNew = connectionHelper.IsTheUserNew();
         if (isCurrentUserNew)
         {
-            _ = Shell.Current.GoToAsync(nameof(EditContactPage));
+           Shell.Current.GoToAsync(nameof(EditContactPage));
         }
 
     }
 
     private void welcomeLabel_Loaded(object sender, EventArgs e)
     {
-        var label = sender as Label;
-
-        label.Text = $"Welcome dear {OperationParameters.currentUser}";
-
+        welcomeLabel.Text = $"Welcome dear {OperationParameters.currentUser}";
     }
 
+    private void ContentPage_Appearing(object sender, EventArgs e)
+    {
+        checkIfNewUser();
+
+    }
 }

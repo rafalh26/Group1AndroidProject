@@ -8,7 +8,7 @@ namespace Group1AndroidProject.ConnectSQL
 
         public bool initialConnection = true;
         private const string ConnectionString = "User Id=postgres.jtjdvjrcxbdrdlgyqmzf;Password=testB@s3SQL123;Server=aws-0-eu-central-1.pooler.supabase.com;Port=6543;Database=postgres;";
-        Contact contact;
+        Contact? contact;
         private bool disposedValue;
 
 
@@ -64,7 +64,7 @@ namespace Group1AndroidProject.ConnectSQL
         }
 
         //Entry nick checkout
-        public async Task<string> SendEnterQueryAsync(string userInput_Nick, Page currentPage)
+        public string SendEnterQueryAsync(string userInput_Nick, Page currentPage)
         {
             string nick = userInput_Nick;
 
@@ -72,7 +72,7 @@ namespace Group1AndroidProject.ConnectSQL
             {
                 try
                 {
-                    await sqlConnection.OpenAsync();
+                    sqlConnection.Open();
 
                     // First, check if the nick already exists
                     string checkQuery = "INSERT INTO \"Contacts\" (nick)\r\n" +
@@ -86,7 +86,7 @@ namespace Group1AndroidProject.ConnectSQL
                         checkCommand.Parameters.AddWithValue("@nick", nick);
 
                         // Execute the command and get the result asynchronously
-                        var result = await checkCommand.ExecuteScalarAsync();
+                        var result = checkCommand.ExecuteScalar();
 
                         // Check if the result is not null, meaning the 'nick' was returned (either inserted or already exists)
                         if (result != null)
@@ -105,7 +105,7 @@ namespace Group1AndroidProject.ConnectSQL
                 catch (Exception ex)
                 {
                     // Handle exception appropriately (e.g., log or show an alert)
-                    // await currentPage.DisplayAlert("Warning", "User nick most likely already exists!", "Ok");
+                    currentPage.DisplayAlert("Warning", "User nick most likely already exists!", "Ok");
                 }
             }
 
@@ -115,13 +115,13 @@ namespace Group1AndroidProject.ConnectSQL
 
         #region ContactsListInRangePageInitialization
 
-        public async Task<bool> IsTheUserNewAsync()
+        public bool IsTheUserNew()
         {
             using (NpgsqlConnection sqlConnection = new NpgsqlConnection(ConnectionString))
             {
                 try
                 {
-                    await sqlConnection.OpenAsync();
+                    sqlConnection.Open();
 
                     // Query to check if the user exists
                     string checkQuery = $"SELECT Name FROM \"Contacts\" WHERE nick = @nick";
@@ -132,7 +132,7 @@ namespace Group1AndroidProject.ConnectSQL
                         checkCommand.Parameters.AddWithValue("@nick", OperationParameters.currentUser);
 
                         // Execute the query and get the result
-                        var result = await checkCommand.ExecuteScalarAsync();
+                        var result = checkCommand.ExecuteScalar();
 
                         // Check if the result is DBNull or null
                         if (result == null || result == DBNull.Value)

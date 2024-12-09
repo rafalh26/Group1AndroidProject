@@ -23,12 +23,12 @@ public partial class MainPage : ContentPage
         nickEntry.Text = "";
         initializedEntry = true;
     }
-    private async void enterButton_Clicked(object sender, EventArgs e)
+    private void enterButton_Clicked(object sender, EventArgs e)
     {
         // Ensure nickEntry.Text is not null or empty before proceeding
         if (string.IsNullOrWhiteSpace(nickEntry.Text))
         {
-            await DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+            DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
             return;
         }
 
@@ -39,7 +39,7 @@ public partial class MainPage : ContentPage
             {
                 //uncomment for debug
                 //await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
-                await connectionHelper.SendEnterQueryAsync(nickEntry.Text, this);
+                connectionHelper.SendEnterQueryAsync(nickEntry.Text, this);
             }
             if (nickEntry.Text != string.Empty)
             {
@@ -127,10 +127,11 @@ public partial class MainPage : ContentPage
 
     //SQL Connection check
 
-    private async Task IsSQLAvailableAsync()
+    private Task IsSQLAvailableAsync()
     {
         ConnectionHelper connectionHelper = new();
         SQLConnectionAvailable = connectionHelper.CheckConnection();
+        return Task.CompletedTask;
     }
 
     #endregion
