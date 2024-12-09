@@ -5,8 +5,25 @@
              Title="EditContactPage">
     <VerticalStackLayout>
         <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+            Text="Please provide Your information:"
+            HorizontalOptions="Center" 
+            />
+        <Label x:Name="nameLabel"
+               Text="Enter Your Name:"
+               FontSize="Medium"/>
+        <Entry x:Name="nameEntry"/>
+        <Label x:Name="email"
+               Text="Enter Your Name:"
+               FontSize="Medium"/>
+        <Entry x:Name="emailEntry"/>
+        <Label x:Name="phone"
+               Text="Enter Your Name:"
+               FontSize="Medium"/>
+        <Entry x:Name="phoneEntry"/>
+        <Label x:Name="address"
+               Text="Enter Your Name:"
+               FontSize="Medium"/>
+        <Entry x:Name="addressEntry"/>
+
     </VerticalStackLayout>
 </ContentPage>
