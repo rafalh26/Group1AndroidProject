@@ -44,7 +44,7 @@ public partial class MainPage : ContentPage
             if (nickEntry.Text != string.Empty)
             {
                 OperationParameters.currentUser = nickEntry.Text;
-                await Shell.Current.GoToAsync(nameof(ContactsListInRange));
+                Shell.Current.GoToAsync(nameof(ContactsListInRange));
             }
         }
         catch (Exception ex) 
