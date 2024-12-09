@@ -11,24 +11,16 @@ public partial class ContactsListInRange : ContentPage
     {
         InitializeComponent();
         connectionHelper = new ConnectionHelper();
-        InitializeAsync();
+        checkIfNewUser();
     }
-    public async void InitializeAsync()
+    private async void checkIfNewUser()
     {
-        // Await the asynchronous operation to complete
         isCurrentUserNew = await connectionHelper.IsTheUserNewAsync();
-
-        // Now that isCurrentUserNew has been updated, check the condition
         if (isCurrentUserNew)
         {
-            // Navigate to the EditContactPage
             _ = Shell.Current.GoToAsync(nameof(EditContactPage));
         }
-    }
 
-    private async void isCurrentUserNewCheck()
-    {
-        isCurrentUserNew = await connectionHelper.IsTheUserNewAsync();
     }
 
     private void welcomeLabel_Loaded(object sender, EventArgs e)
@@ -36,6 +28,7 @@ public partial class ContactsListInRange : ContentPage
         var label = sender as Label;
 
         label.Text = $"Welcome dear {OperationParameters.currentUser}";
+
     }
-        
+
 }

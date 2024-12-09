@@ -6,24 +6,22 @@
     <VerticalStackLayout>
         <Label 
             Text="Please provide Your information:"
-            HorizontalOptions="Center" 
-            />
+            HorizontalOptions="Center"/>
         <Label x:Name="nameLabel"
                Text="Enter Your Name:"
                FontSize="Medium"/>
         <Entry x:Name="nameEntry"/>
-        <Label x:Name="email"
+        <Label x:Name="emailLabel"
                Text="Enter Your E-mail:"
                FontSize="Medium"/>
         <Entry x:Name="emailEntry"/>
-        <Label x:Name="phone"
+        <Label x:Name="phoneLabel"
                Text="Enter Your Phone:"
                FontSize="Medium"/>
         <Entry x:Name="phoneEntry"/>
-        <Label x:Name="address"
+        <Label x:Name="addressLabel"
                Text="Enter Your Address:"
                FontSize="Medium"/>
         <Entry x:Name="addressEntry"/>
-
     </VerticalStackLayout>
 </ContentPage>
