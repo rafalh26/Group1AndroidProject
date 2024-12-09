@@ -64,7 +64,7 @@ namespace Group1AndroidProject.ConnectSQL
         }
 
         //Entry nick checkout
-        public string SendEnterQueryAsync(string userInput_Nick, Page currentPage)
+        public string SendEnterQuery(string userInput_Nick, Page currentPage)
         {
             string nick = userInput_Nick;
 
@@ -102,10 +102,10 @@ namespace Group1AndroidProject.ConnectSQL
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception) //make ex object and uncomment alert for debug
                 {
                     // Handle exception appropriately (e.g., log or show an alert)
-                    currentPage.DisplayAlert("Warning", "User nick most likely already exists!", "Ok");
+                    //currentPage.DisplayAlert("Warning", "User nick most likely already exists!", "Ok");
                 }
             }
 

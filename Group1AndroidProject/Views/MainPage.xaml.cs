@@ -23,12 +23,13 @@ public partial class MainPage : ContentPage
         nickEntry.Text = "";
         initializedEntry = true;
     }
-    private async void enterButton_Clicked(object sender, EventArgs e)
+
+    private void enterButton_Clicked(object sender, EventArgs e)
     {
         // Ensure nickEntry.Text is not null or empty before proceeding
         if (string.IsNullOrWhiteSpace(nickEntry.Text))
         {
-            await DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+            DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
             return;
         }
 
@@ -39,12 +40,12 @@ public partial class MainPage : ContentPage
             {
                 //uncomment for debug
                 //await DisplayAlert("SQL MESSAGE:", connectionHelper.sendEnterQuery(nickEntry.Text, this), "ok");
-                connectionHelper.SendEnterQueryAsync(nickEntry.Text, this);
+                connectionHelper.SendEnterQuery(nickEntry.Text, this);
             }
             if (nickEntry.Text != string.Empty)
             {
                 OperationParameters.currentUser = nickEntry.Text;
-                await Shell.Current.GoToAsync(nameof(ContactsListInRange));
+                Shell.Current.GoToAsync(nameof(ContactsListInRange));
             }
         }
         catch (Exception) // add ex object and uncomment DisplayAlert for debuging
@@ -65,7 +66,7 @@ public partial class MainPage : ContentPage
 
         if (internerConnectionAvailable == false || GPSSignalAvailable == false || SQLConnectionAvailable == false)
         {
-            DisplayAlert("Error", "The application requires GPS,Interner,and SQL base connection to be operational for working", "Quit");
+            await DisplayAlert("Error", "The application requires GPS,Interner,and SQL base connection to be operational for working", "Quit");
             await Task.Delay(5000);
             Application.Current.Quit();
         }
