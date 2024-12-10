@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Group1AndroidProject.Views.MainPage"
+             Title="MainPage">
+    <VerticalStackLayout
+    Padding="20"
+    Spacing="10"
+    VerticalOptions="Center"
+    HorizontalOptions="Center">
+
+        <Label 
+        x:Name="welcomeLabel"
+        Text="Welcome"
+        VerticalOptions="Center" 
+        HorizontalOptions="Center"
+        FontSize="Large"
+        FontAttributes="Bold"
+        TextColor="DarkBlue"
+        Loaded="welcomeLabel_Loaded" />
+    </VerticalStackLayout>
+</ContentPage>
