@@ -10,8 +10,8 @@ public partial class ContactsListInRange : ContentPage
     public ContactsListInRange()
     {
         InitializeComponent();
-        InitializeClock();
         connectionHelper = new ConnectionHelper();
+        InitializeClock();
     }
     private async void InitializeClock()
     {
