@@ -40,6 +40,7 @@ public partial class MainPage : ContentPage
             Application.Current.Quit();
         }
     }
+    //Is internet avaiable Check
     private async Task<bool> IsInternetAvailableAsync()
     {
         try
@@ -55,9 +56,7 @@ public partial class MainPage : ContentPage
             return false;
         }
     }
-
     //GPS checking according to MAUI docs
-
     public async Task IsGpsAvailableAsync()
     {
         try
@@ -78,10 +77,7 @@ public partial class MainPage : ContentPage
             GPSSignalAvailable = false;
         }
     }
-
-
     //SQL Connection check
-
     private Task IsSQLAvailableAsync()
     {
         ConnectionHelper connectionHelper = new();
@@ -100,10 +96,8 @@ public partial class MainPage : ContentPage
                 await DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
                 return;
             }
-
+            OperationParameters.currentUser = nickEntry.Text;
             // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
-            ConnectionHelper connectionHelper = new();
-            OperationParameters.currentUser = await connectionHelper.SendEnterQueryAsync(nickEntry.Text, this);
             await Shell.Current.GoToAsync(nameof(ContactsListInRange));
         }
     }

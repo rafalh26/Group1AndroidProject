@@ -10,9 +10,18 @@ public partial class ContactsListInRange : ContentPage
     public ContactsListInRange()
     {
         InitializeComponent();
-        _ = GetCurrentLocation();
+        InitializeClock();
         connectionHelper = new ConnectionHelper();
     }
+    private async void InitializeClock()
+    {
+        await Task.Delay(2000);
+        OperationParameters.currentUser = await connectionHelper.SendEnterQueryAsync(OperationParameters.currentUser, this);
+        CheckIfNewUser();
+        GetCurrentLocation();
+    }
+
+
     private void CheckIfNewUser()
     {
         isCurrentUserNew = connectionHelper.IsTheUserNew();
@@ -25,7 +34,6 @@ public partial class ContactsListInRange : ContentPage
     private void welcomeLabel_Loaded(object sender, EventArgs e)
     {
         welcomeLabel.Text = $"Welcome {OperationParameters.currentUser}";
-        CheckIfNewUser();
     }
 
     public async Task GetCurrentLocation()
