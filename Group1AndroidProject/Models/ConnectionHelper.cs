@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Group1AndroidProject;
+using Microsoft.Maui.Graphics.Text;
 using Npgsql;
 namespace Group1AndroidProject.Models
 {
@@ -15,7 +16,7 @@ namespace Group1AndroidProject.Models
 
         #region Edit Contact SQL Functions
 
-        public async void UpdateCurrentContactInformation(string nameInput,string emailInput)
+        public async Task UpdateCurrentContactInformation(string nameInput,string emailInput)
         {
             string? nick = OperationParameters.currentUser;
 
@@ -28,7 +29,7 @@ namespace Group1AndroidProject.Models
                 await sqlConnection.OpenAsync();
 
                 const string query = "UPDATE \"Contacts\"" +
-                                     "SET name = @name\r\n" +
+                                     "SET name = @name,\r\n" +
                                      "email = @email" +
                                      "\r\nWHERE nick = @nick;\r\n";
 
@@ -102,47 +103,35 @@ namespace Group1AndroidProject.Models
         #endregion
 
         #region ContactsListInRangePageInitialization
-        public bool IsTheUserNew()
+        public async Task CheckIfUserIsNewAsync()
         {
+            if (string.IsNullOrWhiteSpace(OperationParameters.currentUser))
+                throw new ArgumentException("Current user nick cannot be null or empty.", nameof(OperationParameters.currentUser));
 
-            //string MyUser = OperationParameters.currentUser;
-            bool resultFromSQL = false;
-            using (NpgsqlConnection sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString))
+            try
             {
-                try
-                {
-                    sqlConnection.Open();
+                await using var sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString);
+                await sqlConnection.OpenAsync();
 
-                    // Query to check if the user exists
-                    string checkQuery = $"SELECT name FROM \"Contacts\" WHERE nick = @nick limit 1";
+                // Query to check if the user exists
+                const string checkQuery = @"SELECT name FROM ""Contacts"" WHERE nick = @nick LIMIT 1";
 
-                    using (NpgsqlCommand checkCommand = new NpgsqlCommand(checkQuery, sqlConnection))
-                    {
-                        // Add parameter to prevent SQL injection
-                        checkCommand.Parameters.AddWithValue("@nick", OperationParameters.currentUser);
+                await using var checkCommand = new NpgsqlCommand(checkQuery, sqlConnection);
+                // Add parameter to prevent SQL injection
+                checkCommand.Parameters.AddWithValue("@nick", OperationParameters.currentUser);
 
-                        // Execute the query and get the result
-                        var result = checkCommand.ExecuteScalar();
+                // Execute the query and get the result
+                var result = await checkCommand.ExecuteScalarAsync();
 
-                        // Check if the result is DBNull or null
-                        if (result == null || result == DBNull.Value)
-                        {
-                            // User is new (doesn't exist in the database)
-                            resultFromSQL = true;
-                        }
-                        else
-                        {
-                            // User already exists
-                            resultFromSQL = false;
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    // Handle exceptions appropriately (e.g., logging)
-                }
+                // Update the static property to reflect whether the user is new
+                OperationParameters.newUser = result == null || result == DBNull.Value;
             }
-            return resultFromSQL;
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                Console.WriteLine($"Error checking if user is new: {ex.Message}");
+                throw; // Optionally rethrow the exception
+            }
         }
         public async Task SendMyCurrentLocationAsync()
         {

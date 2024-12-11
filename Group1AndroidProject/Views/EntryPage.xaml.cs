@@ -30,9 +30,7 @@ public partial class EntryPage : ContentPage
         // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
 
         await connectionHelper.SendEnterQueryAsync();
-
-
-        OperationParameters.newUser = connectionHelper.IsTheUserNew();
+        await connectionHelper.CheckIfUserIsNewAsync();
 
         if (OperationParameters.newUser)
         {
