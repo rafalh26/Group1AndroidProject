@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -177,6 +178,49 @@ namespace Group1AndroidProject.Models
                     // Handle exceptions (e.g., log the error or show an alert)
                     // await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
                     throw;
+                }
+            }
+        }
+        public void GatherSourceData()
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(OperationParameters.ConnectionString))
+            {
+                string query = $"select * from \"Contacts\" where nick is not like {OperationParameters.currentUser}";
+
+                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(query, connection);
+                DataTable dataTable = new DataTable();
+
+                adapter.Fill(dataTable); // Fill the DataTable with the query results
+
+                // Convert rows in DataTable to Employee objects
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    // Ensure that "Nick" is not null or empty, as it is required
+                    string? nick = row["nick"]?.ToString();
+
+                    //if is not needed as at entry page its already validated so it can be left as extra validation but it can be skipped as well.
+                    if (string.IsNullOrWhiteSpace(nick))
+                    {
+                        // Skip rows where Nick is missing or invalid
+                        continue;
+                    }
+
+                    // Create and populate the Contact object
+                    Contact contact = new Contact
+                    {
+                        id = row["id"] != DBNull.Value ? Convert.ToInt32(row["id"]) : 0,
+                        nick = nick, // Required field, already validated
+                        name = row["name"]?.ToString(),
+                        email = row["email"]?.ToString(),
+                        phone = row["phone"] != DBNull.Value ? Convert.ToInt32(row["phone"]) : 0,
+                        address = row["address"]?.ToString(),
+                        created_at = DateTime.TryParse(row["created_at"]?.ToString(), out var tempDate) ? tempDate : DateTime.MinValue,
+                        geo_latitude = row["geo_latitude"] != DBNull.Value ? Convert.ToDouble(row["geo_latitude"]) : 0,
+                        geo_longitude = row["geo_longitude"] != DBNull.Value ? Convert.ToDouble(row["geo_longitude"]) : 0,
+                    };
+
+                    // Add the contact to the list
+                    OperationParameters.contactsList.Add(contact);
                 }
             }
         }
