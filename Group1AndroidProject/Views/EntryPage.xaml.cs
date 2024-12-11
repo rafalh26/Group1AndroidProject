@@ -10,7 +10,7 @@ public partial class EntryPage : ContentPage
     public bool internerConnectionAvailable { get; set; } = true;
     public bool GPSSignalAvailable { get; set; } = true;
     public bool SQLConnectionAvailable { get; set; } = true;
-    ConnectionHelper connectionHelper { get; set; }
+    ConnectionHelper connectionHelper;
 
     public EntryPage()
 	{
@@ -29,7 +29,9 @@ public partial class EntryPage : ContentPage
         OperationParameters.currentUser = nickEntry.Text;
         // Using the ConnectionHelper in a `using` block guarantee object disposal and therefore connection termination
 
+        connectionHelper = new();
         await connectionHelper.SendEnterQueryAsync();
+        connectionHelper = new();
         await connectionHelper.CheckIfUserIsNewAsync();
 
         if (OperationParameters.newUser)

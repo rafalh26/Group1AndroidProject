@@ -10,15 +10,11 @@ public partial class MainPage : ContentPage
 	{
 		InitializeComponent();
         connectionHelper = new ConnectionHelper();
-        InitializeClock();
+        //InitializeClock();
+        GetCurrentLocation();
+        //connectionHelper.GatherSourceData();
     }
 
-    private async void InitializeClock()
-    {
-        //OperationParameters.currentUser = await connectionHelper.SendEnterQueryAsync(OperationParameters.currentUser, this);
-        //CheckIfNewUser();
-        GetCurrentLocation();
-    }
 
     private void welcomeLabel_Loaded(object sender, EventArgs e)
     {
