@@ -2,11 +2,58 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Group1AndroidProject.Views.EditContactPage"
-             Title="EditContactPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Edit Contact">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Image
+                Source="https://via.placeholder.com/300x150"
+                Aspect="AspectFill"
+                HorizontalOptions="Center" />
+
+            <Label 
+                Text="First time in the App? No worries, just fill up the data."
+                FontAttributes="Bold"
+                FontSize="18"
+                HorizontalOptions="Center"
+                TextColor="Black" />
+
+            <Entry
+                x:Name="nameEntry"
+                Placeholder="Your name (required)"
+                BackgroundColor="LightGray"
+                TextColor="Black" />
+
+            <Entry
+                x:Name="emailEntry"
+                Placeholder="Your email (required)"
+                BackgroundColor="LightGray"
+                TextColor="Black" />
+
+            <Entry
+                x:Name="phoneEntry"
+                Placeholder="Your phone number (optional)"
+                BackgroundColor="LightGray"
+                TextColor="Black" />
+
+            <Entry
+                x:Name="addressEntry"
+                Placeholder="Your address (optional)"
+                BackgroundColor="LightGray"
+                TextColor="Black" />
+
+            <Image
+                Source="https://via.placeholder.com/150"
+                Aspect="AspectFit"
+                HorizontalOptions="Center" />
+
+            <Button
+                x:Name="saveButton"
+                Text="Save"
+                BackgroundColor="Blue"
+                TextColor="White"
+                CornerRadius="5"
+                HorizontalOptions="Fill" 
+                Clicked="saveButton_Clicked"/>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
