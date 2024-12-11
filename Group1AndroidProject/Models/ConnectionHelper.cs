@@ -185,13 +185,33 @@ namespace Group1AndroidProject.Models
 
         public async Task GatherSourceDataAsync()
         {
+            OperationParameters.gatheringDataCompleted = false;
+
+            // Ensure contactsList is initialized
+            if (OperationParameters.contactsList == null)
+            {
+                OperationParameters.contactsList = new List<Contact>();
+            }
+
             try
             {
+                if (string.IsNullOrEmpty(OperationParameters.currentUser))
+                {
+                    // If currentUser is invalid, log and return early
+                    Console.WriteLine("Current user is not set or invalid.");
+                    return;
+                }
+
                 await using var connection = new NpgsqlConnection(OperationParameters.ConnectionString);
                 await connection.OpenAsync();
 
-                const string query = "";
+                const string query = @"SELECT nick, name, email, phone, address, geo_latitude, geo_longitude 
+                               FROM ""Contacts"" 
+                               WHERE nick NOT LIKE @currentUser 
+                               LIMIT 100;";
                 await using var command = new NpgsqlCommand(query, connection);
+
+                // Add parameter to prevent SQL injection
                 command.Parameters.AddWithValue("@currentUser", OperationParameters.currentUser);
 
                 await using var reader = await command.ExecuteReaderAsync();
@@ -224,8 +244,12 @@ namespace Group1AndroidProject.Models
                 // Log the error and ensure the application continues running
                 Console.WriteLine($"Error gathering source data: {ex.Message}");
             }
+            finally
+            {
+                // Ensure gatheringDataCompleted is always set to true after the operation, even in case of errors
+                OperationParameters.gatheringDataCompleted = true;
+            }
         }
-
 
 
 

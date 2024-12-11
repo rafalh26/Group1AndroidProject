@@ -12,7 +12,7 @@ public partial class MainPage : ContentPage
         connectionHelper = new ConnectionHelper();
         //InitializeClock();
         GetCurrentLocation();
-        //connectionHelper.GatherSourceData();
+        connectionHelper.GatherSourceDataAsync();
     }
 
 
