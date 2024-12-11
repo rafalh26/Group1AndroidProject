@@ -13,8 +13,41 @@ namespace Group1AndroidProject.Models
 
 
 
+        #region Edit Contact SQL Functions
+
+        public async void UpdateCurrentContactInformation(string nameInput,string emailInput)
+        {
+            string? nick = OperationParameters.currentUser;
+
+            if (string.IsNullOrWhiteSpace(nick))
+                throw new ArgumentException("Nick cannot be null or empty.", nameof(nick));
+
+            try
+            {
+                await using var sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString);
+                await sqlConnection.OpenAsync();
+
+                const string query = "UPDATE \"Contacts\"" +
+                                     "SET name = @name\r\n" +
+                                     "email = @email" +
+                                     "\r\nWHERE nick = @nick;\r\n";
+
+                await using var command = new NpgsqlCommand(query, sqlConnection);
+                command.Parameters.AddWithValue("@nick", nick);
+                command.Parameters.AddWithValue("@name", nameInput);
+                command.Parameters.AddWithValue("@email", emailInput);
 
 
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log it or notify the user)
+                Console.WriteLine($"Error updating details: {ex.Message}");
+            }
+        }
+
+        #endregion
 
         #region MainPage Initialization
         public bool CheckConnection()
