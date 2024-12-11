@@ -106,6 +106,7 @@ namespace Group1AndroidProject.Models
         #region ContactsListInRangePageInitialization
         public async Task CheckIfUserIsNewAsync()
         {
+            // Validate the current user parameter
             if (string.IsNullOrWhiteSpace(OperationParameters.currentUser))
                 throw new ArgumentException("Current user nick cannot be null or empty.", nameof(OperationParameters.currentUser));
 
@@ -115,23 +116,23 @@ namespace Group1AndroidProject.Models
                 await sqlConnection.OpenAsync();
 
                 // Query to check if the user exists
-                const string checkQuery = @"SELECT name FROM ""Contacts"" WHERE nick = @nick LIMIT 1";
+                const string checkQuery = "SELECT name FROM \"Contacts\" WHERE nick = @nick LIMIT 1";
 
                 await using var checkCommand = new NpgsqlCommand(checkQuery, sqlConnection);
                 // Add parameter to prevent SQL injection
                 checkCommand.Parameters.AddWithValue("@nick", OperationParameters.currentUser);
 
-                // Execute the query and get the result
+                // Execute the query and check the result
                 var result = await checkCommand.ExecuteScalarAsync();
 
-                // Update the static property to reflect whether the user is new
-                OperationParameters.newUser = result == null || result == DBNull.Value;
+                // Assign newUser based on query result
+                OperationParameters.newUser = result is null or DBNull;
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it appropriately
-                Console.WriteLine($"Error checking if user is new: {ex.Message}");
-                throw; // Optionally rethrow the exception
+                // Log the exception with additional user context
+                Console.WriteLine($"Error checking if user '{OperationParameters.currentUser}' is new: {ex.Message}");
+                throw; // Re-throw the exception after logging
             }
         }
         public async Task SendMyCurrentLocationAsync()
