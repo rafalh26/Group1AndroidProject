@@ -182,49 +182,53 @@ namespace Group1AndroidProject.Models
                 }
             }
         }
-        public void GatherSourceData()
+
+        public async Task GatherSourceDataAsync()
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(OperationParameters.ConnectionString))
+            try
             {
-                string query = $"select * from \"Contacts\" where nick is not like {OperationParameters.currentUser}";
+                await using var connection = new NpgsqlConnection(OperationParameters.ConnectionString);
+                await connection.OpenAsync();
 
-                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(query, connection);
-                DataTable dataTable = new DataTable();
+                const string query = "";
+                await using var command = new NpgsqlCommand(query, connection);
+                command.Parameters.AddWithValue("@currentUser", OperationParameters.currentUser);
 
-                adapter.Fill(dataTable); // Fill the DataTable with the query results
+                await using var reader = await command.ExecuteReaderAsync();
 
-                // Convert rows in DataTable to Employee objects
-                foreach (DataRow row in dataTable.Rows)
+                while (await reader.ReadAsync())
                 {
-                    // Ensure that "Nick" is not null or empty, as it is required
-                    string? nick = row["nick"]?.ToString();
-
-                    //if is not needed as at entry page its already validated so it can be left as extra validation but it can be skipped as well.
+                    // Ensure "nick" is valid
+                    var nick = reader["nick"]?.ToString();
                     if (string.IsNullOrWhiteSpace(nick))
-                    {
-                        // Skip rows where Nick is missing or invalid
                         continue;
-                    }
 
                     // Create and populate the Contact object
-                    Contact contact = new Contact
+                    var contact = new Contact
                     {
-                        id = row["id"] != DBNull.Value ? Convert.ToInt32(row["id"]) : 0,
-                        nick = nick, // Required field, already validated
-                        name = row["name"]?.ToString(),
-                        email = row["email"]?.ToString(),
-                        phone = row["phone"] != DBNull.Value ? Convert.ToInt32(row["phone"]) : 0,
-                        address = row["address"]?.ToString(),
-                        created_at = DateTime.TryParse(row["created_at"]?.ToString(), out var tempDate) ? tempDate : DateTime.MinValue,
-                        geo_latitude = row["geo_latitude"] != DBNull.Value ? Convert.ToDouble(row["geo_latitude"]) : 0,
-                        geo_longitude = row["geo_longitude"] != DBNull.Value ? Convert.ToDouble(row["geo_longitude"]) : 0,
+                        nick = nick,
+                        name = reader["name"]?.ToString(),
+                        email = reader["email"]?.ToString(),
+                        phone = reader["phone"] != DBNull.Value ? Convert.ToInt32(reader["phone"]) : 0,
+                        address = reader["address"]?.ToString(),
+                        geo_latitude = reader["geo_latitude"] != DBNull.Value ? Convert.ToDouble(reader["geo_latitude"]) : 0,
+                        geo_longitude = reader["geo_longitude"] != DBNull.Value ? Convert.ToDouble(reader["geo_longitude"]) : 0,
                     };
 
                     // Add the contact to the list
                     OperationParameters.contactsList.Add(contact);
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the error and ensure the application continues running
+                Console.WriteLine($"Error gathering source data: {ex.Message}");
+            }
         }
-        #endregion    
+
+
+
+
+        #endregion
     }
 }
