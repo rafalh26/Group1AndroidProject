@@ -10,9 +10,8 @@ public partial class MainPage : ContentPage
 	{
 		InitializeComponent();
         connectionHelper = new ConnectionHelper();
-        //InitializeClock();
         GetCurrentLocation();
-        connectionHelper.GatherSourceDataAsync();
+        GetTheData();
     }
 
 
@@ -21,7 +20,7 @@ public partial class MainPage : ContentPage
         welcomeLabel.Text = $"Welcome {OperationParameters.currentUser}";
     }
 
-    public async Task GetCurrentLocation()
+    public async void GetCurrentLocation()
     {
         try
         {
@@ -35,4 +34,10 @@ public partial class MainPage : ContentPage
         connectionHelper = new();
         await connectionHelper.SendMyCurrentLocationAsync();
     }
+    public void GetTheData()
+    {
+        connectionHelper = new();
+        connectionHelper.GatherSourceData();
+    }
+
 }

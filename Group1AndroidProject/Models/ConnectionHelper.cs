@@ -183,7 +183,7 @@ namespace Group1AndroidProject.Models
             }
         }
 
-        public async Task GatherSourceDataAsync()
+        public void GatherSourceData()
         {
             OperationParameters.gatheringDataCompleted = false;
 
@@ -193,64 +193,97 @@ namespace Group1AndroidProject.Models
                 OperationParameters.contactsList = new List<Contact>();
             }
 
-            try
+            int retryAttempts = 3;  // Maximum number of retries
+            int delayBetweenRetries = 2000;  // Delay in milliseconds
+
+            for (int attempt = 0; attempt < retryAttempts; attempt++)
             {
-                if (string.IsNullOrEmpty(OperationParameters.currentUser))
+                try
                 {
-                    // If currentUser is invalid, log and return early
-                    Console.WriteLine("Current user is not set or invalid.");
-                    return;
-                }
-
-                await using var connection = new NpgsqlConnection(OperationParameters.ConnectionString);
-                await connection.OpenAsync();
-
-                const string query = @"SELECT nick, name, email, phone, address, geo_latitude, geo_longitude 
-                               FROM ""Contacts"" 
-                               WHERE nick NOT LIKE @currentUser 
-                               LIMIT 100;";
-                await using var command = new NpgsqlCommand(query, connection);
-
-                // Add parameter to prevent SQL injection
-                command.Parameters.AddWithValue("@currentUser", OperationParameters.currentUser);
-
-                await using var reader = await command.ExecuteReaderAsync();
-
-                while (await reader.ReadAsync())
-                {
-                    // Ensure "nick" is valid
-                    var nick = reader["nick"]?.ToString();
-                    if (string.IsNullOrWhiteSpace(nick))
-                        continue;
-
-                    // Create and populate the Contact object
-                    var contact = new Contact
+                    if (string.IsNullOrEmpty(OperationParameters.currentUser))
                     {
-                        nick = nick,
-                        name = reader["name"]?.ToString(),
-                        email = reader["email"]?.ToString(),
-                        phone = reader["phone"] != DBNull.Value ? Convert.ToInt32(reader["phone"]) : 0,
-                        address = reader["address"]?.ToString(),
-                        geo_latitude = reader["geo_latitude"] != DBNull.Value ? Convert.ToDouble(reader["geo_latitude"]) : 0,
-                        geo_longitude = reader["geo_longitude"] != DBNull.Value ? Convert.ToDouble(reader["geo_longitude"]) : 0,
-                    };
+                        // If currentUser is invalid, log and return early
+                        Console.WriteLine("Current user is not set or invalid.");
+                        return;
+                    }
 
-                    // Add the contact to the list
-                    OperationParameters.contactsList.Add(contact);
+                    // Log the currentUser to ensure it is correct
+                    Console.WriteLine($"Current User: {OperationParameters.currentUser}");
+
+                    // Create and open the connection
+                    using var connection = new NpgsqlConnection(OperationParameters.ConnectionString);
+                    connection.Open();
+
+                    // Prepare the query with parameterized query
+                    const string query = @"SELECT nick, name, email, phone, address, geo_latitude, geo_longitude 
+                                   FROM ""Contacts"" 
+                                   WHERE nick NOT LIKE @currentUser 
+                                   LIMIT 10;";
+
+                    using var command = new NpgsqlCommand(query, connection);
+
+                    // Add parameter to prevent SQL injection
+                    command.Parameters.AddWithValue("@currentUser", OperationParameters.currentUser);
+
+                    // Create the data adapter
+                    using var adapter = new NpgsqlDataAdapter(command);
+                    var dataTable = new DataTable();
+
+                    // Fill the dataTable with the query results
+                    adapter.Fill(dataTable);
+
+                    // Check if there are rows returned
+                    if (dataTable.Rows.Count == 0)
+                    {
+                        Console.WriteLine("No contacts found matching the criteria.");
+                    }
+
+                    // Process the rows
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        // Ensure "nick" is valid
+                        var nick = row["nick"]?.ToString();
+                        if (string.IsNullOrWhiteSpace(nick))
+                            continue;
+
+                        // Create and populate the Contact object
+                        var contact = new Contact
+                        {
+                            nick = nick,
+                            name = row["name"]?.ToString(),
+                            email = row["email"]?.ToString(),
+                            phone = row["phone"] != DBNull.Value ? Convert.ToInt32(row["phone"]) : 0,
+                            address = row["address"]?.ToString(),
+                            geo_latitude = row["geo_latitude"] != DBNull.Value ? Convert.ToDouble(row["geo_latitude"]) : 0,
+                            geo_longitude = row["geo_longitude"] != DBNull.Value ? Convert.ToDouble(row["geo_longitude"]) : 0,
+                        };
+
+                        // Add the contact to the list
+                        OperationParameters.contactsList.Add(contact);
+                    }
+
+                    // If successful, break out of the retry loop
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    // Log the error and retry if there are attempts left
+                    Console.WriteLine($"Error gathering source data (Attempt {attempt + 1}): {ex.Message}");
+
+                    // If this is the last attempt, throw the exception
+                    if (attempt == retryAttempts - 1)
+                    {
+                        throw;  // Rethrow the exception after all retry attempts fail
+                    }
+
+                    // Wait before retrying
+                    System.Threading.Thread.Sleep(delayBetweenRetries);
                 }
             }
-            catch (Exception ex)
-            {
-                // Log the error and ensure the application continues running
-                Console.WriteLine($"Error gathering source data: {ex.Message}");
-            }
-            finally
-            {
-                // Ensure gatheringDataCompleted is always set to true after the operation, even in case of errors
-                OperationParameters.gatheringDataCompleted = true;
-            }
-        }
 
+            // Ensure gatheringDataCompleted is always set to true after the operation
+            OperationParameters.gatheringDataCompleted = true;
+        }
 
 
         #endregion
