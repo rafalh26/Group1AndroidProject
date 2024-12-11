@@ -36,6 +36,7 @@ public partial class MainPage : ContentPage
         {
             await DisplayAlert("Error during location reading:", ex.Message, "OK");
         }
+        connectionHelper = new();
         await connectionHelper.SendMyCurrentLocationAsync();
     }
 }
