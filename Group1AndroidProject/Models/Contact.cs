@@ -17,6 +17,7 @@ namespace Group1AndroidProject.Models
         //public DateTime created_at { get; set; }
         public double geo_latitude { get; set; }
         public double geo_longitude { get; set; }
-        public int distanceFromCurrentUserinMeters { get; set; }
+        public double distanceFromCurrentUserinMeters { get; set; }
+        public double directionFromCurrentUser { get; set; }
     }
 }

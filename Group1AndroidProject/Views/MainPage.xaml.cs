@@ -1,17 +1,25 @@
 using Group1AndroidProject.Models;
+
 namespace Group1AndroidProject.Views;
 
 public partial class MainPage : ContentPage
 {
 
     ConnectionHelper connectionHelper;
+    //public ObservableCollection<Models.Contact> ContactsInRange { get; set; }
 
     public MainPage()
 	{
 		InitializeComponent();
         connectionHelper = new ConnectionHelper();
-        GetCurrentLocation();
+
+        StartUpCommandsAsync();
+    }
+    public async void StartUpCommandsAsync()
+    {
+        await GetCurrentLocation();
         GetTheData();
+        ProcessTheData();
     }
 
 
@@ -20,7 +28,12 @@ public partial class MainPage : ContentPage
         welcomeLabel.Text = $"Welcome {OperationParameters.currentUser}";
     }
 
-    public async void GetCurrentLocation()
+
+
+
+
+
+    public async Task GetCurrentLocation()
     {
         try
         {
@@ -38,6 +51,39 @@ public partial class MainPage : ContentPage
     {
         connectionHelper = new();
         connectionHelper.GatherSourceData();
+    }
+    public void ProcessTheData()
+    {
+
+        //DISTANCE
+        if (OperationParameters.gatheringDataCompleted)
+        {
+            OperationParameters.contactsInRange = new();
+            foreach (var contact in OperationParameters.contactsList)
+            {
+                if (OperationParameters.MyCurrentLocation != null)
+                {
+                    contact.distanceFromCurrentUserinMeters = GeoUtils.CalculateDistance(
+                        OperationParameters.MyCurrentLocation.Latitude,
+                        OperationParameters.MyCurrentLocation.Longitude,
+                        contact.geo_latitude,
+                        contact.geo_longitude);
+
+                    if (contact.distanceFromCurrentUserinMeters < 500000000) // 50 km range
+                    {
+                        contact.directionFromCurrentUser = GeoUtils.CalculateBearing(
+                            OperationParameters.MyCurrentLocation.Latitude,
+                            OperationParameters.MyCurrentLocation.Longitude,
+                            contact.geo_latitude,
+                            contact.geo_longitude);
+
+                        OperationParameters.contactsInRange.Add(contact);
+
+                        Console.WriteLine($"Contact in range: {contact.nick}, Distance: {contact.distanceFromCurrentUserinMeters} m, Direction: {contact.directionFromCurrentUser:F2}°");
+                    }
+                }
+            }
+        }
     }
 
 }
