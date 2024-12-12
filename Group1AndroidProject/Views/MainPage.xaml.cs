@@ -13,6 +13,8 @@ public partial class MainPage : ContentPage
 		InitializeComponent();
         connectionHelper = new ConnectionHelper();
 
+
+
         StartUpCommandsAsync();
     }
     public async void StartUpCommandsAsync()
@@ -83,6 +85,10 @@ public partial class MainPage : ContentPage
                     }
                 }
             }
+        }
+        if (OperationParameters.contactsInRange != null)
+        {
+            contactsToDisplay.ItemsSource = OperationParameters.contactsInRange;
         }
     }
 

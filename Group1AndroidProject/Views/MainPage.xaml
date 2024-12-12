@@ -18,7 +18,66 @@
             TextColor="DarkBlue"
             Loaded="welcomeLabel_Loaded" />
 
-        <!-- CollectionView for displaying contacts -->
-        
+        <!-- ListView for displaying contacts -->
+        <ListView x:Name="contactsToDisplay"
+          SeparatorVisibility="Default"
+          HasUnevenRows="True"
+          HorizontalOptions="Center">
+
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Padding="10" RowSpacing="5" ColumnSpacing="10">
+                            <!-- Define the row and column structure -->
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <!-- For Nick -->
+                                <RowDefinition Height="Auto" />
+                                <!-- For Name and Distance -->
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <!-- Optional for icons or avatars -->
+                                <ColumnDefinition Width="*" />
+                                <!-- For Nick and Name -->
+                                <ColumnDefinition Width="Auto" />
+                                <!-- For Distance -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Nick (Bold and Larger Font) -->
+                            <Label Grid.Row="0"
+                           Grid.Column="1"
+                           Text="{Binding nick}"
+                           FontAttributes="Bold"
+                           FontSize="Medium"
+                           TextColor="DarkBlue"
+                           VerticalOptions="Center" />
+
+                            <!-- Name (Italic, Smaller Font) -->
+                            <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding name}"
+                           FontAttributes="Italic"
+                           FontSize="Small"
+                           TextColor="Gray"
+                           VerticalOptions="Center" />
+
+                            <!-- Distance (Italic, Light Font) -->
+                            <Label Grid.Row="1"
+                           Grid.Column="2"
+                           Text="{Binding distanceFromCurrentUserinMeters}"
+                           FontAttributes="Italic"
+                           FontSize="Small"
+                           TextColor="DarkGray"
+                           VerticalOptions="Center" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+
+
+
     </VerticalStackLayout>
 </ContentPage>
