@@ -15,5 +15,7 @@ namespace Group1AndroidProject.Models
         public static List<Contact> contactsList = new List<Contact>();
         public static Location? MyCurrentLocation { get; set; }
         public static List<Contact> contactsInRange = new List<Contact>();
+        public static Contact contactDetails { get; set; } = new Contact { nick = "" };
+
     }
 }

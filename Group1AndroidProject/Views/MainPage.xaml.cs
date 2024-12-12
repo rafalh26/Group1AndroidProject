@@ -92,4 +92,17 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private async void contactsToDisplay_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+        if (e.SelectedItem is Models.Contact selectedContact)
+        {
+            OperationParameters.contactDetails = selectedContact;
+        }
+        await Shell.Current.GoToAsync(nameof(ContactDetailsPage));
+    }
+
+    private void contactsToDisplay_ItemTapped(object sender, ItemTappedEventArgs e)
+    {
+        contactsToDisplay.SelectedItem = null;
+    }
 }

@@ -3,10 +3,73 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Group1AndroidProject.Views.ContactDetailsPage"
              Title="ContactDetailsPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <!-- Header Section -->
+            <Frame Padding="10" BackgroundColor="LightBlue" CornerRadius="10">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="{Binding nick}" 
+                           FontSize="Large" 
+                           FontAttributes="Bold" 
+                           TextColor="DarkBlue" />
+                    <Label Text="{Binding name}" 
+                           FontSize="Small" 
+                           TextColor="Gray" />
+                    <Label Text="{Binding email}" 
+                           FontSize="Small" 
+                           TextColor="Gray" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Contact Details Section -->
+            <Frame Padding="10" BackgroundColor="WhiteSmoke" CornerRadius="10">
+                <Grid RowSpacing="10" ColumnSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Phone -->
+                    <Label Grid.Row="0" Grid.Column="0" Text="Phone:" FontAttributes="Bold" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding phone}" />
+
+                    <!-- Address -->
+                    <Label Grid.Row="1" Grid.Column="0" Text="Address:" FontAttributes="Bold" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding address}" />
+
+                    <!-- Distance -->
+                    <Label Grid.Row="2" Grid.Column="0" Text="Distance:" FontAttributes="Bold" />
+                    <Label Grid.Row="2" Grid.Column="1" 
+                           Text="{Binding distanceFromCurrentUserinMeters, StringFormat='{0:F1} m'}" />
+                </Grid>
+            </Frame>
+
+            <!-- Geographical Details Section -->
+            <Frame Padding="10" BackgroundColor="WhiteSmoke" CornerRadius="10">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+
+                    <!-- Arrow Image -->
+                    <Image Source="arrow.jpg"
+                           WidthRequest="100" 
+                           HeightRequest="100"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center">
+                        <Image.Rotation>
+                            <Binding Path="directionFromCurrentUser" />
+                        </Image.Rotation>
+                    </Image>
+
+                    <!-- Latitude and Longitude -->
+                    <Label Text="{Binding geo_latitude, StringFormat='Latitude: {0:F6}'}" />
+                    <Label Text="{Binding geo_longitude, StringFormat='Longitude: {0:F6}'}" />
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
