@@ -14,7 +14,7 @@ namespace Group1AndroidProject.Models
         public string? email { get; set; }
         public int? phone { get; set; }
         public string? address { get; set; }
-        public DateTime created_at { get; set; }
+        //public DateTime created_at { get; set; }
         public double geo_latitude { get; set; }
         public double geo_longitude { get; set; }
     }

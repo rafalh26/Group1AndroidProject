@@ -215,10 +215,9 @@ namespace Group1AndroidProject.Models
                     connection.Open();
 
                     // Prepare the query with parameterized query
-                    const string query = @"SELECT nick, name, email, phone, address, geo_latitude, geo_longitude 
+                    const string query = @"SELECT id, nick, name, email, phone, address, geo_latitude, geo_longitude 
                                    FROM ""Contacts"" 
-                                   WHERE nick NOT LIKE @currentUser 
-                                   LIMIT 10;";
+                                   WHERE nick NOT LIKE @currentUser";
 
                     using var command = new NpgsqlCommand(query, connection);
 
@@ -249,6 +248,7 @@ namespace Group1AndroidProject.Models
                         // Create and populate the Contact object
                         var contact = new Contact
                         {
+                            id = row["id"] !=DBNull.Value ? Convert.ToInt32(row["id"]) : 0,
                             nick = nick,
                             name = row["name"]?.ToString(),
                             email = row["email"]?.ToString(),
