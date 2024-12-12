@@ -68,6 +68,10 @@
                     <!-- Latitude and Longitude -->
                     <Label Text="{Binding geo_latitude, StringFormat='Latitude: {0:F6}'}" />
                     <Label Text="{Binding geo_longitude, StringFormat='Longitude: {0:F6}'}" />
+
+                    <Button Clicked="Button_Clicked"
+                            Text="Get me out of here I wanna see other buddies!"/>
+
                 </VerticalStackLayout>
             </Frame>
         </VerticalStackLayout>
