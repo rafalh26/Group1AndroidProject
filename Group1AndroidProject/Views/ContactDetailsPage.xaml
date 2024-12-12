@@ -44,15 +44,13 @@
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding address}" />
 
                     <!-- Distance -->
-                    <Label Grid.Row="2" Grid.Column="0" Text="Distance:" FontAttributes="Bold" />
-                    <Label Grid.Row="2" Grid.Column="1" 
-                           Text="{Binding distanceFromCurrentUserinMeters, StringFormat='{0:F1} m'}" />
+                    
                 </Grid>
             </Frame>
 
             <!-- Geographical Details Section -->
             <Frame Padding="10" BackgroundColor="WhiteSmoke" CornerRadius="10">
-                <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="FillAndExpand">
 
                     <!-- Arrow Image -->
                     <Image Source="arrow.jpg"
@@ -66,11 +64,16 @@
                     </Image>
 
                     <!-- Latitude and Longitude -->
+                    <Label Grid.Row="2" Grid.Column="0" Text="Distance:" FontAttributes="Bold" VerticalTextAlignment="Start" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding distanceFromCurrentUserinMeters, StringFormat='{0:F1} m'}"
+                           FontSize="Large"
+                           />
+
                     <Label Text="{Binding geo_latitude, StringFormat='Latitude: {0:F6}'}" />
                     <Label Text="{Binding geo_longitude, StringFormat='Longitude: {0:F6}'}" />
 
                     <Button Clicked="Button_Clicked"
-                            Text="Get me out of here I wanna see other buddies!"/>
+                            Text="Get me out of here!"/>
 
                 </VerticalStackLayout>
             </Frame>
