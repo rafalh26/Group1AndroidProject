@@ -71,7 +71,7 @@ public partial class MainPage : ContentPage
                         contact.geo_latitude,
                         contact.geo_longitude);
 
-                    if (contact.distanceFromCurrentUserinMeters < 500000000) // 50 km range
+                    if (contact.distanceFromCurrentUserinMeters < 500000) // 50 km range
                     {
                         contact.directionFromCurrentUser = GeoUtils.CalculateBearing(
                             OperationParameters.MyCurrentLocation.Latitude,
