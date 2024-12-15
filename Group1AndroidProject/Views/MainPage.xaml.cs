@@ -105,4 +105,14 @@ public partial class MainPage : ContentPage
     {
         contactsToDisplay.SelectedItem = null;
     }
+
+    private async void backButton_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("///EntryPage");
+    }
+
+    private async void editMyDataButton_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(EditContactPage));
+    }
 }

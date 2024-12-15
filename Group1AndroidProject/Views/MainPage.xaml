@@ -1,78 +1,105 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Group1AndroidProject.Views.MainPage"
+             Shell.NavBarIsVisible="False"
              Title="MainPage">
     <ScrollView>
         <VerticalStackLayout
-        Padding="20"
-        Spacing="10"
-        VerticalOptions="FillAndExpand"
-        HorizontalOptions="FillAndExpand">
+            Padding="20"
+            Spacing="10"
+            VerticalOptions="FillAndExpand"
+            HorizontalOptions="FillAndExpand">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <!-- Left Column takes 20% of available space -->
+                    <ColumnDefinition Width="100" />
+                    <!-- Spacer Column (fixed space) -->
+                    <ColumnDefinition Width="10" />
+                    <!-- Right Column takes 80% of available space -->
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Back Button on the top left, occupying 20% of the screen width -->
+                <Button x:Name="backButton"
+                        Grid.Row="0" Grid.Column="0"
+                        Text="Entry Page"
+                        BackgroundColor="#31e8c3"
+                        TextColor="Black"
+                        CornerRadius="20"
+                        Clicked="backButton_Clicked" />
+
+                <!-- Edit My Data Button on the top right, occupying 80% of the screen width -->
+                <Button x:Name="editMyDataButton"
+                        Grid.Row="0" Grid.Column="2"
+                        Text="Edit my data"
+                        BackgroundColor="#31e8c3"
+                        TextColor="Black"
+                        CornerRadius="20"
+                        Clicked="editMyDataButton_Clicked" />
+            </Grid>
 
             <Label 
-            x:Name="welcomeLabel"
-            Text="Welcome"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center"
-            FontSize="Large"
-            FontAttributes="Bold"
-            TextColor="DarkBlue"
-            Loaded="welcomeLabel_Loaded" />
+                x:Name="welcomeLabel"
+                Text="Welcome"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                TextColor="Black"
+                Loaded="welcomeLabel_Loaded" />
 
             <!-- ListView for displaying contacts -->
             <ListView x:Name="contactsToDisplay"
-                  SeparatorVisibility="Default"
-                  HasUnevenRows="True"
-                  HorizontalOptions="Center"
-                  ItemSelected="contactsToDisplay_ItemSelected"
-                  ItemTapped="contactsToDisplay_ItemTapped">
-
+                      SeparatorVisibility="Default"
+                      HasUnevenRows="True"
+                      HorizontalOptions="Center"
+                      ItemSelected="contactsToDisplay_ItemSelected"
+                      ItemTapped="contactsToDisplay_ItemTapped">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <Grid Padding="10" RowSpacing="5" ColumnSpacing="10">
-                                <!-- Define the row and column structure -->
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
-                                    <!-- For Nick -->
                                     <RowDefinition Height="Auto" />
-                                    <!-- For Name and Distance -->
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
-                                    <!-- Optional for icons or avatars -->
                                     <ColumnDefinition Width="*" />
-                                    <!-- For Nick and Name -->
                                     <ColumnDefinition Width="Auto" />
-                                    <!-- For Distance -->
                                 </Grid.ColumnDefinitions>
 
                                 <!-- Nick (Bold and Larger Font) -->
                                 <Label Grid.Row="0"
-                                   Grid.Column="1"
-                                   Text="{Binding nick}"
-                                   FontAttributes="Bold"
-                                   FontSize="Medium"
-                                   TextColor="DarkBlue"
-                                   VerticalOptions="Center" />
+                                       Grid.Column="1"
+                                       Text="{Binding nick}"
+                                       FontAttributes="Bold"
+                                       FontSize="Medium"
+                                       TextColor="DarkBlue"
+                                       VerticalOptions="Center" />
 
                                 <!-- Name (Italic, Smaller Font) -->
                                 <Label Grid.Row="1"
-                                   Grid.Column="1"
-                                   Text="{Binding name}"
-                                   FontAttributes="Italic"
-                                   FontSize="Small"
-                                   TextColor="Gray"
-                                   VerticalOptions="Center" />
+                                       Grid.Column="1"
+                                       Text="{Binding name}"
+                                       FontAttributes="Italic"
+                                       FontSize="Small"
+                                       TextColor="Gray"
+                                       VerticalOptions="Center" />
 
                                 <!-- Distance (Italic, Light Font) -->
                                 <Label Grid.Row="1"
-                                   Grid.Column="2"
-                                   Text="{Binding distanceFromCurrentUserinMeters}"
-                                   FontAttributes="Italic"
-                                   FontSize="Small"
-                                   TextColor="DarkGray"
-                                   VerticalOptions="Center" />
+                                       Grid.Column="2"
+                                       Text="{Binding distanceFromCurrentUserinMeters, StringFormat='{0:F1} m'}"                       
+                                       FontAttributes="Italic"
+                                       FontSize="Small"
+                                       TextColor="DarkGray"
+                                       VerticalOptions="Center" />
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
@@ -81,5 +108,4 @@
 
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>
