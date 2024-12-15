@@ -2,23 +2,25 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Group1AndroidProject.Views.EntryPage"
-             Title="Entry Page">
+             Title="Welcome">
 
     <VerticalStackLayout
         Padding="20"
         Spacing="15"
         VerticalOptions="Center">
 
+        <Image Source="connection_network_social_icon.svg" HeightRequest="300"
+               IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" />
+
         <Label 
             Text="Welcome to Find My Buddies App!"
             HorizontalOptions="Center"
-            FontSize="Medium"
+            FontSize="Large"
             FontAttributes="Bold" />
 
         <Label
             Text="Enter Your Nickname:"
-            FontSize="Small" />
-
+            FontSize="Medium" FontAttributes="Bold"/>
         <Entry
             x:Name="nickEntry"
             Placeholder="Nickname"
@@ -28,9 +30,10 @@
             x:Name="enterButton"
             Text="Enter"
             FontSize="Medium"
-            BackgroundColor="LightBlue"
-            TextColor="White"
-            CornerRadius="10"
+            FontAttributes="Bold"
+            BackgroundColor="#31e8c3"
+            TextColor="Black"
+            CornerRadius="20"
             Clicked="enterButton_Clicked" />
 
     </VerticalStackLayout>

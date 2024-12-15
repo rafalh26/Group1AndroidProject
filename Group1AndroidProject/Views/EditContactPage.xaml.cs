@@ -26,4 +26,8 @@ public partial class EditContactPage : ContentPage
             await Shell.Current.GoToAsync(nameof(MainPage));
         }
     }
+    private async void backButton_Clicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("///EntryPage");
+    }
 }
