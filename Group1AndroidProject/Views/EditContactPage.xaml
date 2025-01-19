@@ -19,14 +19,24 @@
 
             <Button x:Name="backButton"
                     Grid.Row="0" Grid.Column="0" 
-                    Text="Go back to Entry Page"
+                    Text="Back"
+                    WidthRequest="100"
+                    HeightRequest="60"
                     BackgroundColor="#31e8c3"
                     TextColor="Black"
                     CornerRadius="20"
                     Clicked="backButton_Clicked"
+                    FontSize="16"
+                    HorizontalOptions="End"
                     />
-
             <VerticalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+                
+                <Image Source="hand_shake.png"
+                       Margin="50"
+                       HeightRequest="200"
+                       WidthRequest="200"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Center" />
                 <Label Text="First time in the App?"
                        FontAttributes="Bold"
                        FontSize="18"
@@ -38,36 +48,28 @@
                        FontSize="18"
                        HorizontalOptions="Center"
                        TextColor="Black" />
-
                 <Entry x:Name="nameEntry"
                        Placeholder="Your name (required)"
-                       PlaceholderColor="Tomato"
-                       BackgroundColor="#e7e1eb"
+                       PlaceholderColor="Black"
                        TextColor="Black" />
 
                 <Entry x:Name="emailEntry"
                        Placeholder="Your email (required)"
-                       PlaceholderColor="Tomato"
-                       BackgroundColor="#e7e1eb"
+                       PlaceholderColor="Black"
                        TextColor="Black" />
 
                 <Entry x:Name="phoneEntry"
                        Placeholder="Your phone number (optional)"
-                       PlaceholderColor="Grey"
-                       BackgroundColor="#e7e1eb"
+                       PlaceholderColor="Black"
                        TextColor="Black" />
 
                 <Entry x:Name="addressEntry"
                        Placeholder="Your address (optional)"
-                       PlaceholderColor="Grey"
-                       BackgroundColor="#e7e1eb"
+                       PlaceholderColor="Black"
                        TextColor="Black" />
 
-                <Image Source="hand_shake.png"
-                       Aspect="AspectFit"
-                       HorizontalOptions="Center" />
-
                 <Button x:Name="saveButton"
+                        Margin="50"
                         Text="Save"
                         FontSize="Medium"
                         FontAttributes="Bold"

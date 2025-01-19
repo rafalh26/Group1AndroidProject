@@ -19,39 +19,41 @@
                     <!-- Left Column takes 20% of available space -->
                     <ColumnDefinition Width="100" />
                     <!-- Spacer Column (fixed space) -->
-                    <ColumnDefinition Width="10" />
-                    <!-- Right Column takes 80% of available space -->
                     <ColumnDefinition Width="*" />
+                    <!-- Right Column takes 80% of available space -->
+                    <ColumnDefinition Width="100" />
                 </Grid.ColumnDefinitions>
 
-                <!-- Back Button on the top left, occupying 20% of the screen width -->
-                <Button x:Name="backButton"
-                        Grid.Row="0" Grid.Column="0"
-                        Text="Entry Page"
-                        BackgroundColor="#31e8c3"
-                        TextColor="Black"
-                        CornerRadius="20"
-                        Clicked="backButton_Clicked" />
-
-                <!-- Edit My Data Button on the top right, occupying 80% of the screen width -->
                 <Button x:Name="editMyDataButton"
-                        Grid.Row="0" Grid.Column="2"
+                        Grid.Row="0" Grid.Column="0"
                         Text="Edit my data"
                         BackgroundColor="#31e8c3"
                         TextColor="Black"
                         CornerRadius="20"
                         Clicked="editMyDataButton_Clicked" />
+                <Button x:Name="backButton"
+                        Grid.Row="0" Grid.Column="2"
+                        Text="Back"
+                        BackgroundColor="#31e8c3"
+                        TextColor="Black"
+                        CornerRadius="20"
+                        Clicked="backButton_Clicked" />
             </Grid>
 
             <Label 
                 x:Name="welcomeLabel"
                 Text="Welcome"
-                VerticalOptions="Center" 
+                VerticalOptions="Center"
                 HorizontalOptions="Center"
+                Padding="10"
                 FontSize="Medium"
                 FontAttributes="Bold"
                 TextColor="Black"
                 Loaded="welcomeLabel_Loaded" />
+            <Label
+                Text="Users next to You:"
+                FontSize="16"
+                HorizontalOptions="Center"/>
 
             <!-- ListView for displaying contacts -->
             <ListView x:Name="contactsToDisplay"
@@ -80,7 +82,7 @@
                                        Text="{Binding nick}"
                                        FontAttributes="Bold"
                                        FontSize="Medium"
-                                       TextColor="DarkBlue"
+                                       TextColor="Black"
                                        VerticalOptions="Center" />
 
                                 <!-- Name (Italic, Smaller Font) -->
