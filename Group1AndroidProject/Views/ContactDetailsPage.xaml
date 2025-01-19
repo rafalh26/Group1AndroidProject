@@ -8,7 +8,7 @@
         <VerticalStackLayout Padding="20" Spacing="10">
 
             <!-- Header Section -->
-            <Frame Padding="10" BackgroundColor="LightBlue" CornerRadius="10">
+            <Frame Padding="10" CornerRadius="10" BackgroundColor="WhiteSmoke">
                 <VerticalStackLayout Spacing="5">
                     <Label Text="{Binding nick}" 
                            FontSize="Large" 
@@ -16,10 +16,10 @@
                            TextColor="Black" />
                     <Label Text="{Binding name}" 
                            FontSize="Small" 
-                           TextColor="Gray" />
+                           TextColor="Black" />
                     <Label Text="{Binding email}" 
                            FontSize="Small" 
-                           TextColor="Gray" />
+                           TextColor="Black" />
                 </VerticalStackLayout>
             </Frame>
 
@@ -55,10 +55,11 @@
 
                     <!-- Arrow Image -->
                     <Image Source="arrow.jpg"
-                           WidthRequest="100" 
-                           HeightRequest="100"
+                           WidthRequest="200" 
+                           HeightRequest="200"
                            HorizontalOptions="Center"
                            VerticalOptions="Center">
+
                         <Image.Rotation>
                             <Binding Path="directionFromCurrentUser" />
                         </Image.Rotation>
