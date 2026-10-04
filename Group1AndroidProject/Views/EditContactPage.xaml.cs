@@ -11,6 +11,7 @@ public partial class EditContactPage : ContentPage
     public EditContactPage()
 	{
         InitializeComponent();
+        connectionHelper = new ConnectionHelper();
 	}
 
     private async void saveButton_Clicked(object sender, EventArgs e)
@@ -18,7 +19,7 @@ public partial class EditContactPage : ContentPage
         connectionHelper = new ConnectionHelper();
         if (string.IsNullOrEmpty(nameEntry.Text) || string.IsNullOrEmpty(emailEntry.Text))
         {
-            await DisplayAlert("Required fields error!", "Hey dude are U sure that You are nameless?\n Did You also forgot your internet personality existance by not sharing Your email address with us?\n Play nicely and provide required data","Yhmmm..");
+            await DisplayAlertAsync("Required fields error!", "Hey dude are U sure that You are nameless?\n Did You also forgot your internet personality existance by not sharing Your email address with us?\n Play nicely and provide required data","Yhmmm..");
         }
         else
         {

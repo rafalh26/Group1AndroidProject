@@ -23,7 +23,7 @@ public partial class EntryPage : ContentPage
     {
         if (string.IsNullOrWhiteSpace(nickEntry.Text))
         {
-            await DisplayAlert("Warning", "Please enter a valid nick.", "Ok");
+            await DisplayAlertAsync("Warning", "Please enter a valid nick.", "Ok");
             return;
         }
         OperationParameters.currentUser = nickEntry.Text;
@@ -55,7 +55,7 @@ public partial class EntryPage : ContentPage
 
         if (internerConnectionAvailable == false || GPSSignalAvailable == false || SQLConnectionAvailable == false)
         {
-            await DisplayAlert("Error", "The application requires GPS,Interner,and SQL base connection to be operational for working", "Quit");
+            await DisplayAlertAsync("Error", "The application requires GPS,Interner,and SQL base connection to be operational for working", "Quit");
             await Task.Delay(5000);
             Application.Current.Quit();
         }

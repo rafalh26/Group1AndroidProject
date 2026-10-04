@@ -44,7 +44,7 @@ public partial class MainPage : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error during location reading:", ex.Message, "OK");
+            await DisplayAlertAsync("Error during location reading:", ex.Message, "OK");
         }
         connectionHelper = new();
         await connectionHelper.SendMyCurrentLocationAsync();
