@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+	<!-- Define MAUI package version used by project PackageReference entries -->
+	<MauiVersion>10.0.0</MauiVersion>
+  </PropertyGroup>
+</Project>
