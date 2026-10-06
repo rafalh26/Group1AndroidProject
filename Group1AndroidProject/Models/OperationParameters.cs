@@ -8,7 +8,8 @@ namespace Group1AndroidProject.Models
 {
     public static class OperationParameters
     {
-        public static string ConnectionString { get; } = "Host=ep-old-rain-a9f5bi8q.gwc.azure.neon.tech;Database=Group1DB;Username=Group1DB_owner;Password=qvJUEdkSIf54;SSL Mode=Require;Trust Server Certificate=true";
+        public static string ConnectionString { get; } = "DefaultConnection"
+            ?? throw new InvalidOperationException("Database connection string not configured.");
         public static string? currentUser { get; set; }
         public static bool gatheringDataCompleted { get; set; }
         public static bool newUser { get; set; }
