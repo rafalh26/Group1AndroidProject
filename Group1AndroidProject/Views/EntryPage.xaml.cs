@@ -55,7 +55,7 @@ public partial class EntryPage : ContentPage
 
         if (internerConnectionAvailable == false || GPSSignalAvailable == false || SQLConnectionAvailable == false)
         {
-            await DisplayAlertAsync("Error", "The application requires GPS,Interner,and SQL base connection to be operational for working", "Quit");
+            await DisplayAlertAsync("Error", $"The application requires GPS,Internet,and SQL base connection to be operational for working /n { OperationParameters.errorDisplayer}", "Quit");
             await Task.Delay(5000);
             Application.Current.Quit();
         }
@@ -102,6 +102,7 @@ public partial class EntryPage : ContentPage
     {
         //ConnectionHelper connectionHelper = new();
         SQLConnectionAvailable = connectionHelper.CheckConnection();
+
         return Task.CompletedTask;
     }
 

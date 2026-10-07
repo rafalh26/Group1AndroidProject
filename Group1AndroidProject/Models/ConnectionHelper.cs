@@ -59,11 +59,13 @@ namespace Group1AndroidProject.Models
                 using (var connection = new NpgsqlConnection(OperationParameters.ConnectionString))
                 {
                     connection.Open();
+
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 initialConnection = false;
+                OperationParameters.errorDisplayer = ex.Message;
                 return false;
             }
             return true;
