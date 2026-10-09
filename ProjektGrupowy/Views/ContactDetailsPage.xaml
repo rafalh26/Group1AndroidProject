@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProjektGrupowy.Views.ContactDetailsPage"
+             Shell.NavBarIsVisible="False"
+             Title="ContactDetailsPage">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <!-- Header Section -->
+            <Frame Padding="10" CornerRadius="10" BackgroundColor="WhiteSmoke">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="{Binding nick}" 
+                           FontSize="Large" 
+                           FontAttributes="Bold" 
+                           TextColor="Black" />
+                    <Label Text="{Binding name}" 
+                           FontSize="Small" 
+                           TextColor="Black" />
+                    <Label Text="{Binding email}" 
+                           FontSize="Small" 
+                           TextColor="Black" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Contact Details Section -->
+            <Frame Padding="10" BackgroundColor="WhiteSmoke" CornerRadius="10">
+                <Grid RowSpacing="10" ColumnSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Phone -->
+                    <Label Grid.Row="0" Grid.Column="0" Text="Phone:" FontAttributes="Bold" />
+                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding phone}" />
+
+                    <!-- Address -->
+                    <Label Grid.Row="1" Grid.Column="0" Text="Address:" FontAttributes="Bold" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding address}" />
+
+                    <!-- Distance -->
+                    
+                </Grid>
+            </Frame>
+
+            <!-- Geographical Details Section -->
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

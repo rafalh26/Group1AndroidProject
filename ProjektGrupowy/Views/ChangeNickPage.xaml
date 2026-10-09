@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ProjektGrupowy.Views.ChangeNickPage"
+             Shell.NavBarIsVisible="False"
+             Title="Change Nick">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Change your nickname" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" />
+
+            <Entry x:Name="currentPasswordEntry" Placeholder="Current password" IsPassword="True" />
+            <Entry x:Name="newNickEntry" Placeholder="New nickname" />
+
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Button Text="Save" Clicked="saveButton_Clicked" BackgroundColor="#31e8c3" TextColor="Black" CornerRadius="20" />
+                <Button Text="Cancel" Clicked="cancelButton_Clicked" BackgroundColor="#cccccc" TextColor="Black" CornerRadius="20" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
