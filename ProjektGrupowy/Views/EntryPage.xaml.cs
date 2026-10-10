@@ -16,17 +16,18 @@ public partial class EntryPage : ContentPage
 	{
 		InitializeComponent();
         connectionHelper = new ConnectionHelper();
+        OperationParameters.currentUser = string.Empty;
         CheckConditions();
     }
     #region Events
     private async void enterButton_Clicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(nickEntry.Text))
+        if (string.IsNullOrWhiteSpace(nickEntry.Text) || nickEntry.Text.Trim() == string.Empty)
         {
             await DisplayAlertAsync("Warning", "Please enter a valid nick.", "Ok");
             return;
         }
-        OperationParameters.currentUser = nickEntry.Text.Trim();
+        OperationParameters.currentUser = nickEntry.Text;
 
         connectionHelper = new();
         // Ensure nick exists in table (insert if not exists)
@@ -38,7 +39,7 @@ public partial class EntryPage : ContentPage
         if (OperationParameters.newUser)
         {
             // Navigate to registration / edit page where password will be set
-            await Shell.Current.GoToAsync(nameof(EditContactPage));
+            await Shell.Current.GoToAsync(nameof(UserInfoPage));
             return;
         }
 
@@ -55,7 +56,7 @@ public partial class EntryPage : ContentPage
         if (string.IsNullOrEmpty(storedHash))
         {
             // No password set for this user; route to edit page to create one
-            await Shell.Current.GoToAsync(nameof(EditContactPage));
+            await Shell.Current.GoToAsync(nameof(UserInfoPage));
             return;
         }
 
@@ -69,8 +70,14 @@ public partial class EntryPage : ContentPage
             await DisplayAlertAsync("Login failed", "Incorrect password.", "OK");
         }
     }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        nickEntry.Text = OperationParameters.currentUser;
+        passwordEntry.Text = string.Empty;
+        passwordEntry.IsVisible = false;
+    }
     #endregion
-
 
     #region Pre-Check Logic
     private async void CheckConditions()

@@ -7,11 +7,103 @@ namespace ProjektGrupowy.Services
     {
         public bool initialConnection = true;
 
+        #region MainPage Initialization
+        public bool CheckConnection()
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(OperationParameters.ConnectionString))
+                {
+                    connection.Open();
 
+                    // Check whether the three core tables exist. We check for either the exact-cased name or the lowercase variant
+                    string[] tables = new[] { "users", "Tracks", "GeoLogs" };
+                    int existCount = 0;
 
-        #region Edit Contact SQL Functions
+                    foreach (var t in tables)
+                    {
+                        // Use a simpler existence check to avoid SQL syntax issues in some environments.
+                        // Compare lower(table_name) to lower(@t) to handle case variations.
+                        const string existsSql = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND lower(table_name) = lower(@t) LIMIT 1";
 
-        public async Task UpdateCurrentContactInformation(string nameInput,string emailInput)
+                        using var cmd = new NpgsqlCommand(existsSql, connection);
+                        cmd.Parameters.AddWithValue("@t", t);
+                        var res = cmd.ExecuteScalar();
+                        if (res != null && res != DBNull.Value)
+                            existCount++;
+                    }
+
+                    // If all three exist, we're done
+                    if (existCount == tables.Length)
+                    {
+                        return true;
+                    }
+
+                    // Otherwise, remove any of these tables (both quoted and lowercase variants) and recreate all three fresh
+                    var dropSql = @"
+                        DROP TABLE IF EXISTS public.""GeoLogs"" CASCADE;
+                        DROP TABLE IF EXISTS public.geologs CASCADE;
+                        DROP TABLE IF EXISTS public.""Tracks"" CASCADE;
+                        DROP TABLE IF EXISTS public.tracks CASCADE;
+                        DROP TABLE IF EXISTS public.""users"" CASCADE;
+                        DROP TABLE IF EXISTS public.users CASCADE;
+                    ";
+
+                    using (var dropCmd = new NpgsqlCommand(dropSql, connection))
+                    {
+                        dropCmd.ExecuteNonQuery();
+                    }
+
+                    // Create tables fresh
+                    var createContacts = @"
+                        CREATE TABLE IF NOT EXISTS ""users"" (
+                            id SERIAL PRIMARY KEY,
+                            nick VARCHAR NOT NULL UNIQUE,
+                            name VARCHAR,
+                            pass_hash TEXT NOT NULL,
+                            email VARCHAR,
+                            phone VARCHAR,
+                            address TEXT,
+                            created_at TIMESTAMP DEFAULT now()
+                        );";
+
+                    var createTracks = @"
+                        CREATE TABLE IF NOT EXISTS ""Tracks"" (
+                            id SERIAL PRIMARY KEY,
+                            nick VARCHAR NOT NULL,
+                            trackStart TIMESTAMP,
+                            trackStop TIMESTAMP,
+                            CONSTRAINT fk_tracks_users_nick FOREIGN KEY (nick) REFERENCES ""users""(nick) ON DELETE CASCADE
+                        );";
+
+                    var createGeoLogs = @"
+                        CREATE TABLE IF NOT EXISTS ""GeoLogs"" (
+                            id SERIAL PRIMARY KEY,
+                            track_id INTEGER REFERENCES ""Tracks""(id) ON DELETE CASCADE,
+                            geo_latitude DOUBLE PRECISION,
+                            geo_longitude DOUBLE PRECISION,
+                            locationDate TIMESTAMP
+                        );";
+
+                    var createAll = createContacts + createTracks + createGeoLogs;
+
+                    using (var createCmd = new NpgsqlCommand(createAll, connection))
+                    {
+                        createCmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                initialConnection = false;
+                OperationParameters.errorDisplayer = ex.Message;
+                return false;
+            }
+            return true;
+        }
+
+        //Entry nick checkout
+        public async Task SendEnterQueryAsync()
         {
             string? nick = OperationParameters.currentUser;
 
@@ -23,16 +115,57 @@ namespace ProjektGrupowy.Services
                 await using var sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString);
                 await sqlConnection.OpenAsync();
 
-                const string query = "UPDATE \"Users\"" +
-                                     "SET name = @name,\r\n" +
-                                     "email = @email" +
-                                     "\r\nWHERE nick = @nick;\r\n";
+                const string query = "INSERT INTO \"users\" (nick)\r\n" +
+                                 "VALUES (@nick)\r\n" +
+                                 "ON CONFLICT (nick) DO NOTHING" +
+                                 "\r\nRETURNING nick;\r\n";
 
                 await using var command = new NpgsqlCommand(query, sqlConnection);
                 command.Parameters.AddWithValue("@nick", nick);
-                command.Parameters.AddWithValue("@name", nameInput);
-                command.Parameters.AddWithValue("@email", emailInput);
 
+                var result = await command.ExecuteScalarAsync();
+
+                // If no value is returned, the nick already exists
+                OperationParameters.currentUser = result as string ?? nick;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log it or notify the user)
+                Console.WriteLine($"Error inserting nick: {ex.Message}");
+            }
+        }
+        #endregion
+        #region Edit Contact SQL Functions
+
+        public async Task UpdateCurrentContactInformation(User user, string password)
+        {
+
+            //DEBUG SECTION Might be optional to remove later. It is used to check if the nick is null or empty before proceeding with the update operation.
+            //if (string.IsNullOrWhiteSpace(nick))
+            //    throw new ArgumentException("Nick cannot be null or empty.", nameof(nick));
+
+            try
+            {
+                await using var sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString);
+                await sqlConnection.OpenAsync();
+
+                const string query = "UPDATE \"Users\"" +
+                                     "SET name = @name,\r\n" +
+                                     "pass_hash = @pass_hash,\r\n" +
+                                     "email = @email" +
+                                     "phone = @phone,\r\n" +
+                                     "address = @address" +
+                                     "\r\nWHERE nick = @nick;\r\n";
+
+                var passwordHash = ComputeHash(password ?? string.Empty);
+
+                await using var command = new NpgsqlCommand(query, sqlConnection);
+                command.Parameters.AddWithValue("@nick", user.nick);
+                command.Parameters.AddWithValue("@name", user.name ?? string.Empty);
+                command.Parameters.AddWithValue("@email", user.email ?? string.Empty);
+                command.Parameters.AddWithValue("@pass_hash", passwordHash);
+                command.Parameters.AddWithValue("@phone", user.phone ?? string.Empty);
+                command.Parameters.AddWithValue("@address", user.address ?? string.Empty);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -81,7 +214,6 @@ namespace ProjektGrupowy.Services
         }
 
         #endregion
-
         #region Authentication and Track/GeoLog Helpers
 
         public static string ComputeHash(string input)
@@ -267,138 +399,6 @@ namespace ProjektGrupowy.Services
         }
 
         #endregion
-
-        #region MainPage Initialization
-        public bool CheckConnection()
-        {
-            try
-            {
-                using (var connection = new NpgsqlConnection(OperationParameters.ConnectionString))
-                {
-                    connection.Open();
-
-                    // Check whether the three core tables exist. We check for either the exact-cased name or the lowercase variant
-                    string[] tables = new[] { "users", "Tracks", "GeoLogs" };
-                    int existCount = 0;
-
-                    foreach (var t in tables)
-                    {
-                        // Use a simpler existence check to avoid SQL syntax issues in some environments.
-                        // Compare lower(table_name) to lower(@t) to handle case variations.
-                        const string existsSql = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND lower(table_name) = lower(@t) LIMIT 1";
-
-                        using var cmd = new NpgsqlCommand(existsSql, connection);
-                        cmd.Parameters.AddWithValue("@t", t);
-                        var res = cmd.ExecuteScalar();
-                        if (res != null && res != DBNull.Value)
-                            existCount++;
-                    }
-
-                    // If all three exist, we're done
-                    if (existCount == tables.Length)
-                    {
-                        return true;
-                    }
-
-                    // Otherwise, remove any of these tables (both quoted and lowercase variants) and recreate all three fresh
-                    var dropSql = @"
-                        DROP TABLE IF EXISTS public.""GeoLogs"" CASCADE;
-                        DROP TABLE IF EXISTS public.geologs CASCADE;
-                        DROP TABLE IF EXISTS public.""Tracks"" CASCADE;
-                        DROP TABLE IF EXISTS public.tracks CASCADE;
-                        DROP TABLE IF EXISTS public.""users"" CASCADE;
-                        DROP TABLE IF EXISTS public.users CASCADE;
-                    ";
-
-                    using (var dropCmd = new NpgsqlCommand(dropSql, connection))
-                    {
-                        dropCmd.ExecuteNonQuery();
-                    }
-
-                    // Create tables fresh
-                    var createContacts = @"
-                        CREATE TABLE IF NOT EXISTS ""users"" (
-                            id SERIAL PRIMARY KEY,
-                            nick VARCHAR NOT NULL UNIQUE,
-                            pass_hash TEXT NOT NULL,
-                            name VARCHAR,
-                            email VARCHAR,
-                            phone VARCHAR,
-                            address TEXT,
-                            geo_latitude DOUBLE PRECISION,
-                            geo_longitude DOUBLE PRECISION,
-                            created_at TIMESTAMP DEFAULT now()
-                        );";
-
-                    var createTracks = @"
-                        CREATE TABLE IF NOT EXISTS ""Tracks"" (
-                            id SERIAL PRIMARY KEY,
-                            nick VARCHAR NOT NULL,
-                            trackStart TIMESTAMP,
-                            trackStop TIMESTAMP,
-                            CONSTRAINT fk_tracks_users_nick FOREIGN KEY (nick) REFERENCES ""users""(nick) ON DELETE CASCADE
-                        );";
-
-                    var createGeoLogs = @"
-                        CREATE TABLE IF NOT EXISTS ""GeoLogs"" (
-                            id SERIAL PRIMARY KEY,
-                            track_id INTEGER REFERENCES ""Tracks""(id) ON DELETE CASCADE,
-                            geo_latitude DOUBLE PRECISION,
-                            geo_longitude DOUBLE PRECISION,
-                            locationDate TIMESTAMP
-                        );";
-
-                    var createAll = createContacts + createTracks + createGeoLogs;
-
-                    using (var createCmd = new NpgsqlCommand(createAll, connection))
-                    {
-                        createCmd.ExecuteNonQuery();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                initialConnection = false;
-                OperationParameters.errorDisplayer = ex.Message;
-                return false;
-            }
-            return true;
-        }
-
-        //Entry nick checkout
-        public async Task SendEnterQueryAsync()
-        {
-            string? nick = OperationParameters.currentUser;
-
-            if (string.IsNullOrWhiteSpace(nick))
-                throw new ArgumentException("Nick cannot be null or empty.", nameof(nick));
-
-            try
-            {
-                await using var sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString);
-                await sqlConnection.OpenAsync();
-
-                const string query = "INSERT INTO \"users\" (nick)\r\n" +
-                                 "VALUES (@nick)\r\n" +
-                                 "ON CONFLICT (nick) DO NOTHING" +
-                                 "\r\nRETURNING nick;\r\n";
-
-                await using var command = new NpgsqlCommand(query, sqlConnection);
-                command.Parameters.AddWithValue("@nick", nick);
-
-                var result = await command.ExecuteScalarAsync();
-
-                // If no value is returned, the nick already exists
-                OperationParameters.currentUser = result as string ?? nick;
-            }
-            catch (Exception ex)
-            {
-                // Handle the exception (e.g., log it or notify the user)
-                Console.WriteLine($"Error inserting nick: {ex.Message}");
-            }
-        }
-        #endregion
-
         #region ContactsListInRangePageInitialization
         public async Task CheckIfUserIsNewAsync()
         {

@@ -3,11 +3,11 @@ using ProjektGrupowy.Services;
 
 namespace ProjektGrupowy.Views;
 
-public partial class EditContactPage : ContentPage
+public partial class UserInfoPage : ContentPage
 {
     public ConnectionHelper connectionHelper { get; set; }
     User user;
-    public EditContactPage()
+    public UserInfoPage()
 	{
         InitializeComponent();
         connectionHelper = new ConnectionHelper();
@@ -54,7 +54,7 @@ public partial class EditContactPage : ContentPage
             }
             else
             {
-                await connectionHelper.UpdateCurrentContactInformation(user.name, user.email);
+                await connectionHelper.UpdateCurrentContactInformation(user, passwordEntry.Text);
                 await DisplayAlert("Success", "Your changes were saved.", "OK");
                 await Shell.Current.GoToAsync(nameof(MainPage));
             }
@@ -71,6 +71,6 @@ public partial class EditContactPage : ContentPage
     }
     private async void backButton_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("///EntryPage");
+        await Shell.Current.GoToAsync("..");
     }
 }

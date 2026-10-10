@@ -11,15 +11,15 @@ public partial class MainPage : ContentPage
     private int? _currentTrackId = null;
     //public ObservableCollection<Models.User> ContactsInRange { get; set; }
 
-/*    public MainPage()
+public MainPage()
 	{
 		InitializeComponent();
-        connectionHelper = new ConnectionHelper();
+		connectionHelper = new ConnectionHelper();
+	}    
 
+	// Note: StartUpCommandsAsync is invoked from OnAppearing to ensure page is loaded before running startup tasks.
+	// If you need startup work earlier, call StartUpCommandsAsync() from OnAppearing or use a loaded event.
 
-
-        StartUpCommandsAsync();
-    }*/
     public async Task StartUpCommandsAsync()
     {
         await GetCurrentLocation();
@@ -36,6 +36,7 @@ public partial class MainPage : ContentPage
     {
         base.OnAppearing();
 
+        UpdateStartStopImage();
         // Ensure welcome text and start background initialization when the page is visible
         welcomeLabel.Text = $"Welcome {OperationParameters.currentUser}";
 
@@ -49,7 +50,12 @@ public partial class MainPage : ContentPage
         }
     }
 
-
+    private void UpdateStartStopImage()
+    {
+        startStopButton.Source = OperationParameters.startClicked
+            ? "stop_button.png"
+            : "start_button.png";
+    }
 
 
 
@@ -77,7 +83,7 @@ public partial class MainPage : ContentPage
 
     private async void editMyDataButton_Clicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(EditContactPage));
+        await Shell.Current.GoToAsync(nameof(UserInfoPage));
     }
 
     private async void startStopButton_Clicked(object sender, EventArgs e)
@@ -87,15 +93,19 @@ public partial class MainPage : ContentPage
             // start
             await _loggingService.StartAsync(OperationParameters.currentUser ?? string.Empty);
             _isLogging = true;
-            startStopButton.Text = "Stop";
         }
         else
         {
             // stop
             await _loggingService.StopAsync();
             _isLogging = false;
-            startStopButton.Text = "Start";
         }
+        if (OperationParameters.startClicked)
+        { OperationParameters.startClicked = false; }
+        else { OperationParameters.startClicked = true; }
+        UpdateStartStopImage();
+
+
     }
 
     private async void logOffButton_Clicked(object sender, EventArgs e)
@@ -119,17 +129,13 @@ public partial class MainPage : ContentPage
         if (me != null)
         {
             OperationParameters.userInfo = me;
-            await Shell.Current.GoToAsync(nameof(ContactDetailsPage));
+            OperationParameters.editEnabled = false;
+            await Shell.Current.GoToAsync(nameof(UserInfoPage));
         }
         else
         {
             // Navigate to Edit page to view/edit (user may not have details yet)
-            await Shell.Current.GoToAsync(nameof(EditContactPage));
+            await Shell.Current.GoToAsync(nameof(UserInfoPage));
         }
-    }
-
-    private async void changeNickButton_Clicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(ChangeNickPage));
     }
 }

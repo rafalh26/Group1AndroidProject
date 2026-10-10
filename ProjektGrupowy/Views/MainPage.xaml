@@ -17,11 +17,11 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <!-- Left Column takes 20% of available space -->
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="200" />
                     <!-- Spacer Column (fixed space) -->
                     <ColumnDefinition Width="*" />
                     <!-- Right Column takes 80% of available space -->
-                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
 
                 <Button x:Name="editMyDataButton"
@@ -41,13 +41,6 @@
             </Grid>
 
             <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                <Button x:Name="startStopButton"
-                        Text="Start"
-                        BackgroundColor="#31e8c3"
-                        TextColor="Black"
-                        CornerRadius="20"
-                        Clicked="startStopButton_Clicked" />
-
                 <Button x:Name="userDetailsButton"
                         Text="My details"
                         BackgroundColor="#31e8c3"
@@ -61,12 +54,6 @@
                         TextColor="Black"
                         CornerRadius="20"
                         Clicked="logOffButton_Clicked" />
-                <Button x:Name="changeNickButton"
-                        Text="Change nick"
-                        BackgroundColor="#31e8c3"
-                        TextColor="Black"
-                        CornerRadius="20"
-                        Clicked="changeNickButton_Clicked" />
             </HorizontalStackLayout>
 
             <Label 
@@ -74,11 +61,20 @@
                 Text="Welcome"
                 VerticalOptions="Center"
                 HorizontalOptions="Center"
-                Padding="10"
-                FontSize="Medium"
+                Padding="20"
+                FontSize="Large"
                 FontAttributes="Bold"
                 TextColor="Black"
                 Loaded="welcomeLabel_Loaded" />
+            <ImageButton
+                x:Name="startStopButton"
+                Source="start_button.png"
+                Aspect="AspectFit"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                HeightRequest="350"
+                Clicked="startStopButton_Clicked" />
 
         </VerticalStackLayout>
     </ScrollView>

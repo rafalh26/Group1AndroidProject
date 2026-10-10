@@ -6,10 +6,9 @@ namespace ProjektGrupowy
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(EntryPage), typeof(EntryPage));
-            Routing.RegisterRoute(nameof(EditContactPage), typeof(EditContactPage));
+            //Routing.RegisterRoute(nameof(EntryPage), typeof(EntryPage));
+            Routing.RegisterRoute(nameof(UserInfoPage), typeof(UserInfoPage));
             Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
-            Routing.RegisterRoute(nameof(ContactDetailsPage), typeof(ContactDetailsPage));
         }
     }
 }
