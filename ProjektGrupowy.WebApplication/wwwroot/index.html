@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ProjektGrupowy - Simple UI</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+4w5kYyXk6kQYVn8J4s8b5Yv0h2yZJ2Q2GkMMm0hM=" crossorigin="" />
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; margin: 0; padding: 0; }
+    header { background:#159D84; color:white; padding:12px 16px; }
+    .container { padding: 16px; }
+    .panel { background:#fff; padding:12px; border-radius:8px; margin-bottom:12px; }
+    #map { height: 400px; border-radius:8px; }
+    input, button { padding:8px; font-size:14px; }
+    .row { display:flex; gap:8px; align-items:center; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ProjektGrupowy - Simple Web UI</h1>
+  </header>
+  <div class="container">
+    <div class="panel">
+      <h3>Account</h3>
+      <div class="row">
+        <input id="nick" placeholder="Nick" />
+        <input id="password" placeholder="Password" type="password" />
+        <button id="loginBtn">Login</button>
+        <button id="registerBtn">Register</button>
+      </div>
+      <div id="accountMsg"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Tracks</h3>
+      <div class="row">
+        <input id="tracksNick" placeholder="Nick to load tracks" />
+        <button id="loadTracksBtn">Load Tracks</button>
+        <select id="tracksSelect"></select>
+        <button id="showLogsBtn">Show Logs</button>
+      </div>
+      <div id="queued">Loaded tracks: 0</div>
+    </div>
+
+    <div class="panel">
+      <h3>Map</h3>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j8q+FfQ3s9wO3w0gYw8M9wK4lHibq6b3qk9C6A0=" crossorigin=""></script>
+  <script src="/app.js"></script>
+</body>
+</html>

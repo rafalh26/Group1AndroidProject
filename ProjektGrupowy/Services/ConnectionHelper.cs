@@ -137,45 +137,47 @@ namespace ProjektGrupowy.Services
         #endregion
         #region Edit Contact SQL Functions
 
-        public async Task UpdateCurrentContactInformation(User user, string password)
+        public async Task UpdateCurrentContactInformation(
+            User user,
+            string? password = null)
         {
+            if (string.IsNullOrWhiteSpace(user.nick))
+                throw new ArgumentException("User nickname is required.");
 
-            //DEBUG SECTION Might be optional to remove later. It is used to check if the nick is null or empty before proceeding with the update operation.
-            //if (string.IsNullOrWhiteSpace(nick))
-            //    throw new ArgumentException("Nick cannot be null or empty.", nameof(nick));
+            await using var connection =
+                new NpgsqlConnection(OperationParameters.ConnectionString);
 
-            try
-            {
-                await using var sqlConnection = new NpgsqlConnection(OperationParameters.ConnectionString);
-                await sqlConnection.OpenAsync();
+            await connection.OpenAsync();
 
-                const string query = "UPDATE \"Users\"" +
-                                     "SET name = @name,\r\n" +
-                                     "pass_hash = @pass_hash,\r\n" +
-                                     "email = @email" +
-                                     "phone = @phone,\r\n" +
-                                     "address = @address" +
-                                     "\r\nWHERE nick = @nick;\r\n";
+            string? passwordHash = string.IsNullOrWhiteSpace(password)
+                ? null
+                : ComputeHash(password);
 
-                var passwordHash = ComputeHash(password ?? string.Empty);
+            const string query = @"
+        UPDATE ""users""
+        SET name = @name,
+            email = @email,
+            phone = @phone,
+            address = @address,
+            pass_hash = COALESCE(@pass_hash, pass_hash)
+        WHERE nick = @nick;";
 
-                await using var command = new NpgsqlCommand(query, sqlConnection);
-                command.Parameters.AddWithValue("@nick", user.nick);
-                command.Parameters.AddWithValue("@name", user.name ?? string.Empty);
-                command.Parameters.AddWithValue("@email", user.email ?? string.Empty);
-                command.Parameters.AddWithValue("@pass_hash", passwordHash);
-                command.Parameters.AddWithValue("@phone", user.phone ?? string.Empty);
-                command.Parameters.AddWithValue("@address", user.address ?? string.Empty);
+            await using var command = new NpgsqlCommand(query, connection);
 
-                await command.ExecuteNonQueryAsync();
-            }
-            catch (Exception ex)
-            {
-                // Handle the exception (e.g., log it or notify the user)
-                Console.WriteLine($"Error updating details: {ex.Message}");
-            }
+            command.Parameters.AddWithValue("@nick", user.nick);
+            command.Parameters.AddWithValue("@name", user.name ?? string.Empty);
+            command.Parameters.AddWithValue("@email", user.email ?? string.Empty);
+            command.Parameters.AddWithValue("@phone", user.phone ?? string.Empty);
+            command.Parameters.AddWithValue("@address", user.address ?? string.Empty);
+            command.Parameters.AddWithValue(
+                "@pass_hash",
+                (object?)passwordHash ?? DBNull.Value);
+
+            int rowsAffected = await command.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 0)
+                throw new InvalidOperationException("User was not found.");
         }
-
         public async Task<User?> GetUserByNickAsync(string nick)
         {
             if (string.IsNullOrWhiteSpace(nick)) return null;
@@ -185,7 +187,11 @@ namespace ProjektGrupowy.Services
                 await using var conn = new NpgsqlConnection(OperationParameters.ConnectionString);
                 await conn.OpenAsync();
 
-                const string q = "SELECT id, nick, pass_hash, name, email, phone, address, geo_latitude, geo_longitude, created_at FROM \"users\" WHERE nick = @nick LIMIT 1";
+                const string q = @"
+                                SELECT id, nick, pass_hash, name, email, phone, address
+                                FROM ""users""
+                                WHERE nick = @nick
+                                LIMIT 1"; 
                 await using var cmd = new NpgsqlCommand(q, conn);
                 cmd.Parameters.AddWithValue("@nick", nick);
                 await using var reader = await cmd.ExecuteReaderAsync();
@@ -267,9 +273,10 @@ namespace ProjektGrupowy.Services
                                        VALUES (@nick, @name,@pass_hash, @email, @phone, @address, now())
                                        ON CONFLICT (nick) DO UPDATE
                                        SET name = EXCLUDED.name,
-                                           email = EXCLUDED.email,
-                                           pass_hash = EXCLUDED.pass_hash
-                                       RETURNING id;";
+                                       email = EXCLUDED.email,
+                                       phone = EXCLUDED.phone,
+                                       address = EXCLUDED.address,
+                                       pass_hash = EXCLUDED.pass_hash";
 
                 await using var command = new NpgsqlCommand(query, sqlConnection);
                 command.Parameters.AddWithValue("@nick", user.nick);
@@ -338,7 +345,7 @@ namespace ProjektGrupowy.Services
             }
         }
 
-        public async Task InsertGeoLogAsync(int trackId, double latitude, double longitude, DateTime timestamp)
+        public async Task InsertGeoLogAsync(int trackId, double latitude, double longitude, DateTimeOffset timestamp)
         {
             try
             {
@@ -350,7 +357,8 @@ namespace ProjektGrupowy.Services
                 command.Parameters.AddWithValue("@tid", trackId);
                 command.Parameters.AddWithValue("@lat", latitude);
                 command.Parameters.AddWithValue("@lon", longitude);
-                command.Parameters.AddWithValue("@date", timestamp);
+                // Store UTC timestamp in DB (timestamptz). Use UtcDateTime to ensure DateTimeKind.Utc is sent.
+                command.Parameters.AddWithValue("@date", timestamp.UtcDateTime);
                 await command.ExecuteNonQueryAsync();
             }
             catch (Exception ex)

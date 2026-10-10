@@ -1,80 +1,216 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ProjektGrupowy.Views.MainPage"
-             Shell.NavBarIsVisible="False"
-             Title="MainPage">
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ProjektGrupowy.Views.MainPage"
+    Shell.NavBarIsVisible="False"
+    Title="Ride Tracker"
+    BackgroundColor="#F4F7FA">
+
+    <ContentPage.Resources>
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="#FFFFFF" />
+            <Setter Property="TextColor" Value="#263B50" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="HeightRequest" Value="44" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="BorderWidth" Value="1" />
+            <Setter Property="BorderColor" Value="#DFE7EE" />
+        </Style>
+    </ContentPage.Resources>
+
     <ScrollView>
         <VerticalStackLayout
-            Padding="20"
-            Spacing="10"
-            VerticalOptions="FillAndExpand"
-            HorizontalOptions="FillAndExpand">
+            Padding="22,12,22,16"
+            Spacing="10">
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <!-- Left Column takes 20% of available space -->
-                    <ColumnDefinition Width="200" />
-                    <!-- Spacer Column (fixed space) -->
-                    <ColumnDefinition Width="*" />
-                    <!-- Right Column takes 80% of available space -->
-                    <ColumnDefinition Width="200" />
-                </Grid.ColumnDefinitions>
+            <!-- HEADER -->
+            <Grid
+                ColumnDefinitions="*,Auto"
+                VerticalOptions="Center">
 
-                <Button x:Name="editMyDataButton"
-                        Grid.Row="0" Grid.Column="0"
-                        Text="Edit my data"
-                        BackgroundColor="#31e8c3"
-                        TextColor="Black"
-                        CornerRadius="20"
-                        Clicked="editMyDataButton_Clicked" />
-                <Button x:Name="backButton"
-                        Grid.Row="0" Grid.Column="2"
-                        Text="Back"
-                        BackgroundColor="#31e8c3"
-                        TextColor="Black"
-                        CornerRadius="20"
-                        Clicked="backButton_Clicked" />
+                <VerticalStackLayout
+                    Spacing="3"
+                    VerticalOptions="Center">
+
+                    <Label
+                        Text="RIDE TRACKER"
+                        FontSize="11"
+                        FontAttributes="Bold"
+                        CharacterSpacing="2.5"
+                        TextColor="#159D84" />
+
+                    <Label
+                        Text="Your journey starts here."
+                        FontSize="13"
+                        TextColor="#78899A" />
+                </VerticalStackLayout>
+
+                <Button
+                    x:Name="backButton"
+                    Grid.Column="1"
+                    Text="Back"
+                    Style="{StaticResource MenuButton}"
+                    WidthRequest="76"
+                    Clicked="backButton_Clicked" />
             </Grid>
 
-            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                <Button x:Name="userDetailsButton"
+            <!-- COMPACT WELCOME -->
+            <Border
+    BackgroundColor="#FFFFFF"
+    Stroke="#E1EAF0"
+    StrokeThickness="1"
+    Padding="16,10"
+    StrokeShape="RoundRectangle 16">
+
+                <VerticalStackLayout Spacing="2">
+
+
+                    <Label
+            x:Name="welcomeLabel"
+            Text="Rider"
+            FontSize="21"
+            FontAttributes="Bold"
+            TextColor="#20374B"
+            LineBreakMode="TailTruncation"
+            MaxLines="1"
+            Loaded="welcomeLabel_Loaded" />
+
+                    <Label
+            Text="Ready for your next ride?"
+            FontSize="12"
+            TextColor="#78899A" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- TRACKING: PRIMARY ACTION -->
+            <Border
+                BackgroundColor="#FFFFFF"
+                Stroke="#E1EAF0"
+                StrokeThickness="1"
+                Padding="18,20,18,16"
+                StrokeShape="RoundRectangle 24">
+
+                <VerticalStackLayout
+                    Spacing="8"
+                    HorizontalOptions="Fill">
+
+                    <Label
+                        Text="LIVE TRACKING"
+                        FontSize="11"
+                        CharacterSpacing="2"
+                        FontAttributes="Bold"
+                        TextColor="#159D84"
+                        HorizontalTextAlignment="Center" />
+
+                    <Label
+                        Text="Own the road."
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="#20374B"
+                        HorizontalTextAlignment="Center" />
+
+                    <Label
+                        Text="Record your route and explore your rides later."
+                        FontSize="13"
+                        TextColor="#78899A"
+                        HorizontalTextAlignment="Center"
+                        HorizontalOptions="Center"
+                        LineBreakMode="WordWrap" />
+
+                    <!-- EXISTING START / STOP IMAGE -->
+                    <ImageButton
+                        x:Name="startStopButton"
+                        Source="start_button.png"
+                        Aspect="AspectFit"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center"
+                        HeightRequest="240"
+                        WidthRequest="240"
+                        Clicked="startStopButton_Clicked" />
+
+                    <Label
+                        Text="YOUR RIDE. YOUR ROUTE. YOUR HISTORY."
+                        FontSize="9"
+                        CharacterSpacing="1.2"
+                        TextColor="#94A3B2"
+                        HorizontalTextAlignment="Center" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ACCOUNT -->
+            <VerticalStackLayout Spacing="10">
+
+                <Label
+                    Text="ACCOUNT"
+                    FontSize="11"
+                    FontAttributes="Bold"
+                    CharacterSpacing="2"
+                    TextColor="#78899A" />
+
+                <Grid
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="10">
+
+                    <Button
+                        x:Name="editMyDataButton"
+                        Text="Edit my data"
+                        Style="{StaticResource MenuButton}"
+                        Clicked="editMyDataButton_Clicked" />
+
+                    <Button
+                        x:Name="userDetailsButton"
+                        Grid.Column="1"
                         Text="My details"
-                        BackgroundColor="#31e8c3"
-                        TextColor="Black"
-                        CornerRadius="20"
+                        Style="{StaticResource MenuButton}"
                         Clicked="userDetailsButton_Clicked" />
+                </Grid>
 
-                <Button x:Name="logOffButton"
+                <Grid
+                    ColumnDefinitions="*,*"
+                    ColumnSpacing="10">
+
+                    <Button
+                        x:Name="logOffButton"
                         Text="Log off"
-                        BackgroundColor="#ff7f7f"
-                        TextColor="Black"
-                        CornerRadius="20"
+                        BackgroundColor="#FFF0F0"
+                        TextColor="#C74747"
+                        BorderColor="#F3D5D5"
+                        BorderWidth="1"
+                        CornerRadius="12"
+                        HeightRequest="40"
+                        FontSize="12"
+                        FontAttributes="Bold"
                         Clicked="logOffButton_Clicked" />
-            </HorizontalStackLayout>
 
-            <Label 
-                x:Name="welcomeLabel"
-                Text="Welcome"
-                VerticalOptions="Center"
-                HorizontalOptions="Center"
-                Padding="20"
-                FontSize="Large"
-                FontAttributes="Bold"
-                TextColor="Black"
-                Loaded="welcomeLabel_Loaded" />
-            <ImageButton
-                x:Name="startStopButton"
-                Source="start_button.png"
-                Aspect="AspectFit"
-                BackgroundColor="Transparent"
-                HorizontalOptions="Fill"
-                VerticalOptions="Fill"
-                HeightRequest="350"
-                Clicked="startStopButton_Clicked" />
+                    <Button
+                        x:Name="quitButton"
+                        Grid.Column="1"
+                        Text="Quit application"
+                        BackgroundColor="#C74747"
+                        TextColor="#FFFFFF"
+                        BorderColor="#C74747"
+                        BorderWidth="1"
+                        CornerRadius="12"
+                        HeightRequest="40"
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        Clicked="quitButton_Clicked" />
+                </Grid>
+
+            </VerticalStackLayout>
+
+            <!-- FOOTER -->
+            <Label
+                Text="GPS JOURNEY LOG"
+                FontSize="9"
+                CharacterSpacing="2"
+                TextColor="#A0ACB8"
+                HorizontalTextAlignment="Center" />
 
         </VerticalStackLayout>
     </ScrollView>

@@ -10,6 +10,6 @@
 
         public double geo_longitude { get; set; }
 
-        public DateTime locationDate { get; set; }
+        public DateTimeOffset locationDate { get; set; }
     }
 }

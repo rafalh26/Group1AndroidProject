@@ -6,7 +6,7 @@ public partial class MainPage : ContentPage
 {
 
     ConnectionHelper? connectionHelper;
-    LoggingService _loggingService = new();
+    LoggingService _loggingService = LoggingService.Instance;
     private bool _isLogging = false;
     private int? _currentTrackId = null;
     //public ObservableCollection<Models.User> ContactsInRange { get; set; }
@@ -16,6 +16,33 @@ public MainPage()
 		InitializeComponent();
 		connectionHelper = new ConnectionHelper();
 	}    
+
+    private async void quitButton_Clicked(object sender, EventArgs e)
+    {
+        // If logging is running, stop it and wait for flush
+        var logger = LoggingService.Instance;
+        if (logger != null && logger.IsRunning)
+        {
+            try
+            {
+                await logger.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error stopping logger before quit: {ex.Message}");
+            }
+        }
+
+        // Quit app on main thread
+        try
+        {
+            Application.Current.Quit();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to quit app: {ex.Message}");
+        }
+    }
 
 	// Note: StartUpCommandsAsync is invoked from OnAppearing to ensure page is loaded before running startup tasks.
 	// If you need startup work earlier, call StartUpCommandsAsync() from OnAppearing or use a loaded event.
@@ -81,11 +108,37 @@ public MainPage()
         await Shell.Current.GoToAsync("///EntryPage");
     }
 
-    private async void editMyDataButton_Clicked(object sender, EventArgs e)
+    private async void editMyDataButton_Clicked(
+        object sender, EventArgs e)
     {
+        OperationParameters.editEnabled = true;
         await Shell.Current.GoToAsync(nameof(UserInfoPage));
     }
 
+    private async void userDetailsButton_Clicked(
+        object sender, EventArgs e)
+    {
+        OperationParameters.editEnabled = false;
+
+        var connectionHelper = new ConnectionHelper();
+
+        var me = await connectionHelper.GetUserByNickAsync(
+            OperationParameters.currentUser ?? string.Empty);
+
+        if (me == null)
+        {
+            await DisplayAlert(
+                "Error",
+                "Could not load your account details.",
+                "OK");
+
+            return;
+        }
+
+        OperationParameters.userInfo = me;
+
+        await Shell.Current.GoToAsync(nameof(UserInfoPage));
+    }
     private async void startStopButton_Clicked(object sender, EventArgs e)
     {
         if (!_isLogging)
@@ -121,21 +174,5 @@ public MainPage()
         await Shell.Current.GoToAsync("///EntryPage");
     }
 
-    private async void userDetailsButton_Clicked(object sender, EventArgs e)
-    {
-        // show user details page (ContactDetailsPage) by fetching the current user from DB
-        connectionHelper = new();
-        var me = await connectionHelper.GetUserByNickAsync(OperationParameters.currentUser ?? string.Empty);
-        if (me != null)
-        {
-            OperationParameters.userInfo = me;
-            OperationParameters.editEnabled = false;
-            await Shell.Current.GoToAsync(nameof(UserInfoPage));
-        }
-        else
-        {
-            // Navigate to Edit page to view/edit (user may not have details yet)
-            await Shell.Current.GoToAsync(nameof(UserInfoPage));
-        }
-    }
+    // Duplicate userDetailsButton_Clicked removed (first definition earlier in file is kept).
 }

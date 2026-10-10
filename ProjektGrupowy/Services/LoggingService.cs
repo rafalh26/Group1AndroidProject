@@ -1,16 +1,48 @@
 using ProjektGrupowy.Models;
 using System.Collections.Concurrent;
+using Microsoft.Maui.ApplicationModel;
 
 namespace ProjektGrupowy.Services
 {
     public class LoggingService
     {
+        // Shared singleton instance so other pages can stop logging before quitting
+        public static LoggingService Instance { get; } = new LoggingService();
+
         private readonly ConnectionHelper _connectionHelper = new();
         private CancellationTokenSource? _cts;
         private Task? _workerTask;
         private int? _currentTrackId;
+        private string? _nick;
+        private DateTime _startedAt;
+        private DateTime? _lastSuccessfulDbOp;
+        private readonly TimeSpan _offlineTimeout = TimeSpan.FromMinutes(20);
         private readonly ConcurrentQueue<GeoLog> _queue = new();
         private readonly int _maxQueue = 40; // allow some backlog
+
+        // Convert UTC to Poland local time (tries common TZ IDs with fallbacks)
+        private static DateTime ConvertToPolandTime(DateTime utc)
+        {
+            if (utc.Kind != DateTimeKind.Utc)
+            {
+                utc = DateTime.SpecifyKind(utc, DateTimeKind.Utc);
+            }
+
+            string[] tzIds = new[] { "Europe/Warsaw", "Central European Standard Time" };
+            foreach (var id in tzIds)
+            {
+                try
+                {
+                    var tz = TimeZoneInfo.FindSystemTimeZoneById(id);
+                    return TimeZoneInfo.ConvertTimeFromUtc(utc, tz);
+                }
+                catch (TimeZoneNotFoundException) { }
+                catch (InvalidTimeZoneException) { }
+            }
+
+            // Fallback: use system local time
+            return utc.ToLocalTime();
+        }
 
         public bool IsRunning => _workerTask != null && !_workerTask.IsCompleted;
 
@@ -20,7 +52,19 @@ namespace ProjektGrupowy.Services
             if (IsRunning) return;
 
             // create track in DB (best effort)
-            _currentTrackId = await _connectionHelper.CreateTrackAsync(nick);
+            _nick = nick;
+            _startedAt = DateTime.UtcNow;
+            _lastSuccessfulDbOp = null;
+            try
+            {
+                _currentTrackId = await _connectionHelper.CreateTrackAsync(nick);
+                if (_currentTrackId.HasValue)
+                    _lastSuccessfulDbOp = DateTime.UtcNow;
+            }
+            catch
+            {
+                _currentTrackId = null;
+            }
 
             _cts = new CancellationTokenSource();
             _workerTask = Task.Run(() => WorkerLoop(_cts.Token));
@@ -67,7 +111,8 @@ namespace ProjektGrupowy.Services
                             track_id = _currentTrackId.Value,
                             geo_latitude = loc.Latitude,
                             geo_longitude = loc.Longitude,
-                            locationDate = DateTime.UtcNow
+                            // store UTC as DateTimeOffset
+                            locationDate = DateTimeOffset.UtcNow
                         };
 
                         try
@@ -76,6 +121,7 @@ namespace ProjektGrupowy.Services
 
                             // on success, flush queued items
                             await FlushQueueAsync();
+                            _lastSuccessfulDbOp = DateTime.UtcNow;
                         }
                         catch (Exception)
                         {
@@ -83,6 +129,55 @@ namespace ProjektGrupowy.Services
                             _queue.Enqueue(geo);
                             while (_queue.Count > _maxQueue && _queue.TryDequeue(out _)) { }
                         }
+                    }
+                    else if (loc != null)
+                    {
+                        // No DB track yet: queue point with placeholder track id (-1)
+                        var queued = new GeoLog
+                        {
+                            track_id = -1,
+                            geo_latitude = loc.Latitude,
+                            geo_longitude = loc.Longitude,
+                            // store UTC as DateTimeOffset for queued items as well
+                            locationDate = DateTimeOffset.UtcNow
+                        };
+                        _queue.Enqueue(queued);
+                        while (_queue.Count > _maxQueue && _queue.TryDequeue(out _)) { }
+                    }
+
+                    // If we don't have a DB track id, try to create one (best-effort) so queued points can be flushed.
+                    if (!_currentTrackId.HasValue && !string.IsNullOrWhiteSpace(_nick))
+                    {
+                        try
+                        {
+                            var created = await _connectionHelper.CreateTrackAsync(_nick);
+                            if (created.HasValue)
+                            {
+                                _currentTrackId = created.Value;
+                                _lastSuccessfulDbOp = DateTime.UtcNow;
+                                // attempt to flush queued items now that we have a track id
+                                await FlushQueueAsync();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // ignore - we'll retry later
+                            Console.WriteLine($"Track creation retry failed: {ex.Message}");
+                        }
+                    }
+
+                    // If we've been offline (no DB success) longer than allowed, quit the app
+                    if (!_currentTrackId.HasValue && DateTime.UtcNow - _startedAt > _offlineTimeout && !_lastSuccessfulDbOp.HasValue)
+                    {
+                        try
+                        {
+                            MainThread.BeginInvokeOnMainThread(() => Application.Current.Quit());
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Failed to quit app after offline timeout: {ex.Message}");
+                        }
+                        break;
                     }
                 }
                 catch (Exception ex) when (!(ex is OperationCanceledException))
@@ -109,7 +204,16 @@ namespace ProjektGrupowy.Services
                 if (!_queue.TryDequeue(out var toSend)) break;
                 try
                 {
-                    await _connectionHelper.InsertGeoLogAsync(toSend.track_id, toSend.geo_latitude, toSend.geo_longitude, toSend.locationDate);
+                    // If queued item was created before track existed, remap its track id to the current track id
+                    var trackId = toSend.track_id < 0 && _currentTrackId.HasValue ? _currentTrackId.Value : toSend.track_id;
+                    if (!_currentTrackId.HasValue && toSend.track_id < 0)
+                    {
+                        // no track yet; put back and stop flushing
+                        _queue.Enqueue(toSend);
+                        break;
+                    }
+                    await _connectionHelper.InsertGeoLogAsync(trackId, toSend.geo_latitude, toSend.geo_longitude, toSend.locationDate);
+                    _lastSuccessfulDbOp = DateTime.UtcNow;
                 }
                 catch (Exception)
                 {

@@ -4,9 +4,23 @@
              x:Class="ProjektGrupowy.Views.UserInfoPage"
              Shell.NavBarIsVisible="False"
              Title="Edit Contact">
+
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="20">
-            <Grid>
+        <Label x:Name="pageTitle"
+       Text="Your profile"
+       FontAttributes="Bold"
+       FontSize="24"
+       HorizontalOptions="Center"
+       TextColor="#20374B" />
+
+        <Label x:Name="pageDescription"
+       Text="Manage your account information."
+       FontSize="14"
+       HorizontalOptions="Center"
+       TextColor="#78899A" />
+
+        <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -37,13 +51,15 @@
                        WidthRequest="200"
                        Aspect="AspectFit"
                        HorizontalOptions="Center" />
-                <Label Text="First time in the App?"
+                <Label x:Name="firstTimeLabel"
+                       Text="First time in the App?"
                        FontAttributes="Bold"
                        FontSize="18"
                        HorizontalOptions="Center"
                        TextColor="Black" />
 
-                <Label Text="No worries, just fill up the data."
+                <Label x:Name="firstTimeDescLabel"
+                       Text="No worries, just fill up the data."
                        FontAttributes="Bold"
                        FontSize="18"
                        HorizontalOptions="Center"
@@ -84,6 +100,16 @@
                         TextColor="Black"
                         CornerRadius="20"
                         Clicked="saveButton_Clicked" />
+
+                <Button x:Name="quitButton"
+                        Margin="50"
+                        Text="Quit"
+                        FontSize="Medium"
+                        FontAttributes="Bold"
+                        BackgroundColor="#FFFFFF"
+                        TextColor="#263B50"
+                        CornerRadius="20"
+                        Clicked="quitButton_Clicked" />
             </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>

@@ -1,47 +1,115 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ProjektGrupowy.Views.EntryPage"
-             Title="">
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="ProjektGrupowy.Views.EntryPage"
+    Title=""
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#F4F7FA">
 
-    <VerticalStackLayout
-        Padding="20"
-        Spacing="15"
-        VerticalOptions="Center">
+    <Grid
+        Padding="22,18,22,24"
+        RowDefinitions="*,Auto"
+        RowSpacing="8">
 
-        <Image Source="connection_network_social_icon.png" Margin="100" HeightRequest="200"
-               IsVisible="True" VerticalOptions="Center" HorizontalOptions="Center" />
+        <!-- HERO IMAGE -->
+        <Image
+            Source="entry_page.png"
+            Grid.Row="0"
+            Aspect="AspectFit"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            Margin="0,0,0,4" />
 
-        <Label 
-            Text="Welcome to Find My Buddies App!"
-            HorizontalOptions="Center"
-            FontSize="Large"
-            FontAttributes="Bold" />
+        <!-- LOGIN SECTION -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Spacing="12"
+            VerticalOptions="End">
 
-        <Label
-            Text="Enter Your Nickname:"
-            FontSize="Medium" FontAttributes="Bold"/>
-        <Entry
-            x:Name="nickEntry"
-            Placeholder="Nickname"
-            FontSize="Small"/>
+            <VerticalStackLayout Spacing="4">
+                <Label
+                    Text="RIDE TRACKER"
+                    HorizontalOptions="Center"
+                    FontSize="11"
+                    CharacterSpacing="2.5"
+                    FontAttributes="Bold"
+                    TextColor="#159D84" />
 
-        <Entry
-            x:Name="passwordEntry"
-            Placeholder="Password"
-            IsPassword="True"
-            FontSize="Small"
-            IsVisible="False" />
+                <Label
+                    Text="Welcome to Track My Ride"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    TextColor="#20374B"
+                    LineBreakMode="WordWrap" />
 
-        <Button
-            x:Name="enterButton"
-            Text="Enter"
-            FontSize="Medium"
-            FontAttributes="Bold"
-            BackgroundColor="#31e8c3"
-            TextColor="Black"
-            CornerRadius="20"
-            Clicked="enterButton_Clicked" />
+                <Label
+                    Text="Your next journey starts here."
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    FontSize="13"
+                    TextColor="#78899A" />
+            </VerticalStackLayout>
 
-    </VerticalStackLayout>
+            <!-- NICKNAME -->
+            <VerticalStackLayout Spacing="6">
+                <Label
+                    Text="Nickname"
+                    FontSize="13"
+                    FontAttributes="Bold"
+                    TextColor="#20374B" />
+
+                <Entry
+                    x:Name="nickEntry"
+                    Placeholder="Enter your nickname"
+                    FontSize="15"
+                    HeightRequest="48"
+                    BackgroundColor="#FFFFFF"
+                    TextColor="#20374B"
+                    PlaceholderColor="#94A3B2" />
+            </VerticalStackLayout>
+
+            <!-- PASSWORD: VISIBILITY STILL CONTROLLED BY CODE -->
+            <Entry
+                x:Name="passwordEntry"
+                Placeholder="Enter your password"
+                IsPassword="True"
+                FontSize="15"
+                HeightRequest="48"
+                IsVisible="False"
+                BackgroundColor="#FFFFFF"
+                TextColor="#20374B"
+                PlaceholderColor="#94A3B2" />
+
+            <!-- PRIMARY ACTION -->
+            <Button
+                x:Name="enterButton"
+                Text="Enter"
+                FontSize="16"
+                FontAttributes="Bold"
+                BackgroundColor="#159D84"
+                TextColor="#FFFFFF"
+                CornerRadius="14"
+                HeightRequest="52"
+                Clicked="enterButton_Clicked" />
+
+            <!-- SECONDARY / DESTRUCTIVE ACTION -->
+            <Button
+                x:Name="quitButton"
+                Text="Quit application"
+                FontSize="13"
+                FontAttributes="Bold"
+                BackgroundColor="#FFF0F0"
+                TextColor="#C74747"
+                BorderColor="#F3D5D5"
+                BorderWidth="1"
+                CornerRadius="14"
+                HeightRequest="44"
+                Clicked="quitButton_Clicked" />
+
+        </VerticalStackLayout>
+
+    </Grid>
 </ContentPage>

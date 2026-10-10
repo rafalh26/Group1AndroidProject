@@ -79,6 +79,31 @@ public partial class EntryPage : ContentPage
     }
     #endregion
 
+    private async void quitButton_Clicked(object sender, EventArgs e)
+    {
+        var logger = LoggingService.Instance;
+        if (logger != null && logger.IsRunning)
+        {
+            try
+            {
+                await logger.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error stopping logger before quit: {ex.Message}");
+            }
+        }
+
+        try
+        {
+            Application.Current.Quit();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to quit app: {ex.Message}");
+        }
+    }
+
     #region Pre-Check Logic
     private async void CheckConditions()
     {
@@ -130,13 +155,20 @@ public partial class EntryPage : ContentPage
             GPSSignalAvailable = false;
         }
     }
-    //SQL Connection check
-    private Task IsSQLAvailableAsync()
+    //SQL Connection check - run blocking DB check off the UI thread to avoid ANR
+    private async Task IsSQLAvailableAsync()
     {
-        //ConnectionHelper connectionHelper = new();
-        SQLConnectionAvailable = connectionHelper.CheckConnection();
-
-        return Task.CompletedTask;
+        try
+        {
+            // Run the synchronous DB connection check on a background thread
+            SQLConnectionAvailable = await Task.Run(() => connectionHelper.CheckConnection());
+        }
+        catch (Exception ex)
+        {
+            // If anything goes wrong, mark as unavailable and capture error
+            SQLConnectionAvailable = false;
+            OperationParameters.errorDisplayer = ex.Message;
+        }
     }
 
     #endregion
